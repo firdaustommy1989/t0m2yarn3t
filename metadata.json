@@ -2,5 +2,7 @@
   "name": "E-Voting OSIS - Pemilihan Ketua OSIS Sekolah",
   "description": "Sistem E-Voting pemilihan Ketua dan Wakil Ketua OSIS sekolah dengan dashboard admin, upload DPT, manajemen kandidat, bilik suara digital terenkripsi token, dan quick count suara.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

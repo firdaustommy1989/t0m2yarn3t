@@ -83,9 +83,24 @@ export const PublicQuickCountView: React.FC<PublicQuickCountViewProps> = ({
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
-      {/* Top Header & Ticker */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+    <div className="relative min-h-[calc(100vh-120px)]">
+      {/* Background Samar-samar Gedung SMAN 2 Samarinda */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 overflow-hidden print:hidden select-none"
+        aria-hidden="true"
+      >
+        <img
+          src="/src/assets/images/sman2_samarinda_bg_1791879520803.jpg"
+          alt="Latar Belakang Gedung SMAN 2 Samarinda"
+          referrerPolicy="no-referrer"
+          className="w-full h-full object-cover object-center opacity-15 filter blur-[0.4px] scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-100/80 via-slate-100/50 to-slate-100/85"></div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+        {/* Top Header & Ticker */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
@@ -349,5 +364,6 @@ export const PublicQuickCountView: React.FC<PublicQuickCountViewProps> = ({
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };

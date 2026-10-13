@@ -1,8 +1,8 @@
 import { Candidate, ElectionSettings, Voter, VoteRecord } from '../types/election';
 
 export const DEFAULT_SETTINGS: ElectionSettings = {
-  schoolName: 'SMA Negeri 1 Harapan Bangsa',
-  schoolAddress: 'Jl. Pemuda Pendidikan No. 45, Jakarta',
+  schoolName: 'SMA Negeri 2 Samarinda',
+  schoolAddress: 'Jl. Kemakmuran No. 27, Samarinda, Kalimantan Timur',
   electionTitle: 'Pemilihan Ketua & Wakil Ketua OSIS',
   periodYear: '2026/2027',
   status: 'active',

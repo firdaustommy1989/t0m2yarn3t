@@ -33,7 +33,13 @@ export function getSettings(): ElectionSettings {
       saveSettings(DEFAULT_SETTINGS);
       return DEFAULT_SETTINGS;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    if (parsed.schoolName === 'SMA Negeri 1 Harapan Bangsa') {
+      parsed.schoolName = DEFAULT_SETTINGS.schoolName;
+      parsed.schoolAddress = DEFAULT_SETTINGS.schoolAddress;
+      saveSettings(parsed);
+    }
+    return parsed;
   } catch {
     return DEFAULT_SETTINGS;
   }
