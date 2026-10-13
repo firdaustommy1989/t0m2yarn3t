@@ -6,6 +6,7 @@ import { CandidatesTab } from './CandidatesTab';
 import { SettingsTab } from './SettingsTab';
 import { PublicQuickCountView } from '../public/PublicQuickCountView';
 import { PrintBeritaAcaraModal } from './PrintBeritaAcaraModal';
+import { SCHOOL_LOGO, SCHOOL_LOGO_SVG } from '../../utils/schoolAssets';
 import {
   BarChart3,
   Users,
@@ -54,7 +55,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-white p-1 flex items-center justify-center shrink-0 shadow-md">
             <img
-              src="/src/assets/images/sman2_samarinda_logo_1791881987088.jpg"
+              src={SCHOOL_LOGO}
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = SCHOOL_LOGO_SVG;
+              }}
               alt="Logo SMAN 2 Samarinda"
               referrerPolicy="no-referrer"
               className="w-full h-full object-contain"

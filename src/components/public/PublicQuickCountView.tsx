@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Candidate, Voter, VoteRecord, ElectionSettings } from '../../types/election';
 import { BarChart3, Users, CheckCircle2, Clock, Trophy, School, Printer, TrendingUp, Layers, RefreshCw, RotateCcw } from 'lucide-react';
+import { SCHOOL_BACKGROUND } from '../../utils/schoolAssets';
 
 interface PublicQuickCountViewProps {
   candidates: Candidate[];
@@ -90,7 +91,7 @@ export const PublicQuickCountView: React.FC<PublicQuickCountViewProps> = ({
         aria-hidden="true"
       >
         <img
-          src="/src/assets/images/sman2_samarinda_bg_1791879520803.jpg"
+          src={SCHOOL_BACKGROUND}
           alt="Latar Belakang Gedung SMAN 2 Samarinda"
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover object-center opacity-15 filter blur-[0.4px] scale-105"

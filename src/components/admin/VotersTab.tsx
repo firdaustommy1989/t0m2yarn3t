@@ -55,6 +55,7 @@ export const VotersTab: React.FC<VotersTabProps> = ({
   // CSV Upload state
   const [csvRawText, setCsvRawText] = useState('');
   const [parseResult, setParseResult] = useState<ParseCSVResult | null>(null);
+  const [replaceExistingOnUpload, setReplaceExistingOnUpload] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Manual Add Form State
@@ -166,11 +167,17 @@ export const VotersTab: React.FC<VotersTabProps> = ({
 
   const handleCommitUpload = () => {
     if (!parseResult || parseResult.voters.length === 0) return;
-    const updated = [...voters, ...parseResult.voters];
-    onUpdateVoters(updated);
+    if (replaceExistingOnUpload) {
+      onUpdateVoters(parseResult.voters);
+    } else {
+      const existingNisns = new Set(voters.map((v) => v.nisn.toLowerCase()));
+      const newOnly = parseResult.voters.filter((v) => !existingNisns.has(v.nisn.toLowerCase()));
+      onUpdateVoters([...voters, ...newOnly]);
+    }
     setIsUploadModalOpen(false);
     setCsvRawText('');
     setParseResult(null);
+    setReplaceExistingOnUpload(false);
   };
 
   // Add Manual Voter
@@ -635,26 +642,69 @@ export const VotersTab: React.FC<VotersTabProps> = ({
               </div>
             )}
 
+            {/* Import Option & Bulk Delete in Upload Modal */}
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-800">
+                <input
+                  type="checkbox"
+                  checked={replaceExistingOnUpload}
+                  onChange={(e) => setReplaceExistingOnUpload(e.target.checked)}
+                  className="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
+                />
+                <span>Hapus & Gantikan seluruh DPT lama dengan data baru yang di-upload</span>
+              </label>
+              <p className="text-[11px] text-slate-500">
+                {replaceExistingOnUpload
+                  ? 'Perhatian: Seluruh data pemilih lama akan dihapus dan diganti dengan data file yang diupload.'
+                  : `Data baru akan digabungkan dengan ${voters.length} pemilih yang sudah ada (NISN duplikat diabaikan).`}
+              </p>
+            </div>
+
             {/* Footer */}
-            <div className="flex justify-end gap-2.5 pt-2 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsUploadModalOpen(false);
-                  setParseResult(null);
-                }}
-                className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 font-semibold text-xs hover:bg-slate-100"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                disabled={!parseResult || parseResult.voters.length === 0}
-                onClick={handleCommitUpload}
-                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs shadow-md shadow-blue-500/20"
-              >
-                Simpan ke DPT ({parseResult?.voters.length || 0} Siswa)
-              </button>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 pt-2 border-t border-slate-100">
+              <div>
+                {voters.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (
+                        confirm(
+                          `Apakah Anda yakin ingin MENGHAPUS MASSAL SELURUH ${voters.length} pemilih DPT yang ada sekarang? Tindakan ini tidak dapat dibatalkan.`
+                        )
+                      ) {
+                        onUpdateVoters([]);
+                        setSelectedVoterIds(new Set());
+                      }
+                    }}
+                    className="px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                    <span>Hapus Massal DPT ({voters.length} Siswa)</span>
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsUploadModalOpen(false);
+                    setParseResult(null);
+                    setReplaceExistingOnUpload(false);
+                  }}
+                  className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 font-semibold text-xs hover:bg-slate-100"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  disabled={!parseResult || parseResult.voters.length === 0}
+                  onClick={handleCommitUpload}
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs shadow-md shadow-blue-500/20"
+                >
+                  {replaceExistingOnUpload ? 'Ganti & Simpan' : 'Simpan ke DPT'} ({parseResult?.voters.length || 0} Siswa)
+                </button>
+              </div>
             </div>
           </div>
         </div>

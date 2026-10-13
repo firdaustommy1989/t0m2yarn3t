@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import confetti from 'canvas-confetti';
 import { CheckCircle2, Printer, ArrowRight, ShieldCheck, School, QrCode } from 'lucide-react';
 import { Voter, ElectionSettings } from '../../types/election';
+import { SCHOOL_LOGO, SCHOOL_LOGO_SVG } from '../../utils/schoolAssets';
 
 interface VoteSuccessModalProps {
   voter: Voter;
@@ -75,7 +76,10 @@ export const VoteSuccessModal: React.FC<VoteSuccessModalProps> = ({
             <div className="flex items-center justify-between border-b border-slate-200/80 pb-3 mb-3">
               <div className="flex items-center gap-2">
                 <img
-                  src="/src/assets/images/sman2_samarinda_logo_1791881987088.jpg"
+                  src={SCHOOL_LOGO}
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = SCHOOL_LOGO_SVG;
+                  }}
                   alt="Logo SMAN 2 Samarinda"
                   referrerPolicy="no-referrer"
                   className="w-5 h-5 object-contain shrink-0"

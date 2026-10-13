@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Voter, ElectionSettings } from '../../types/election';
 import { Vote, KeyRound, UserCheck, AlertCircle, CheckCircle2, Shield } from 'lucide-react';
+import { SCHOOL_LOGO, SCHOOL_LOGO_SVG } from '../../utils/schoolAssets';
 
 interface VoterLoginProps {
   voters: Voter[];
@@ -66,7 +67,10 @@ export const VoterLogin: React.FC<VoterLoginProps> = ({ voters, settings, onLogi
         <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 p-6 text-white text-center relative">
           <div className="w-16 h-16 mx-auto rounded-2xl bg-white p-1 mb-3 shadow-lg flex items-center justify-center">
             <img
-              src="/src/assets/images/sman2_samarinda_logo_1791881987088.jpg"
+              src={SCHOOL_LOGO}
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = SCHOOL_LOGO_SVG;
+              }}
               alt="Logo SMAN 2 Samarinda"
               referrerPolicy="no-referrer"
               className="w-full h-full object-contain"

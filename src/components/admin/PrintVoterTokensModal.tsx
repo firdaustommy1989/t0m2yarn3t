@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Voter, ElectionSettings } from '../../types/election';
 import { Printer, X, Filter, School, KeyRound } from 'lucide-react';
+import { SCHOOL_LOGO, SCHOOL_LOGO_SVG } from '../../utils/schoolAssets';
 
 interface PrintVoterTokensModalProps {
   voters: Voter[];
@@ -81,7 +82,10 @@ export const PrintVoterTokensModal: React.FC<PrintVoterTokensModalProps> = ({
                   <div className="flex items-center justify-between border-b border-slate-200 pb-2 mb-2 gap-2">
                     <div className="flex items-center gap-2">
                       <img
-                        src="/src/assets/images/sman2_samarinda_logo_1791881987088.jpg"
+                        src={SCHOOL_LOGO}
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = SCHOOL_LOGO_SVG;
+                        }}
                         alt="Logo"
                         referrerPolicy="no-referrer"
                         className="w-7 h-7 object-contain shrink-0"

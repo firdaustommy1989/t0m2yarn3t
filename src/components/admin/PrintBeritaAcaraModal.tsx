@@ -1,6 +1,7 @@
 import React from 'react';
 import { Candidate, Voter, VoteRecord, ElectionSettings } from '../../types/election';
 import { Printer, X, Award, School } from 'lucide-react';
+import { SCHOOL_LOGO, SCHOOL_LOGO_SVG } from '../../utils/schoolAssets';
 
 interface PrintBeritaAcaraModalProps {
   candidates: Candidate[];
@@ -66,7 +67,10 @@ export const PrintBeritaAcaraModal: React.FC<PrintBeritaAcaraModalProps> = ({
           {/* Letterhead (KOP SURAT) */}
           <div className="border-b-4 border-double border-slate-900 pb-4 mb-6 flex items-center justify-center gap-4 text-center">
             <img
-              src="/src/assets/images/sman2_samarinda_logo_1791881987088.jpg"
+              src={SCHOOL_LOGO}
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = SCHOOL_LOGO_SVG;
+              }}
               alt="Logo SMAN 2 Samarinda"
               referrerPolicy="no-referrer"
               className="w-16 h-16 object-contain shrink-0"

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Vote, BarChart3, ShieldCheck, School, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
 import { AppView, ElectionSettings } from '../types/election';
+import { SCHOOL_LOGO, SCHOOL_LOGO_SVG } from '../utils/schoolAssets';
 
 interface NavbarProps {
   currentView: AppView;
@@ -50,9 +51,12 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-18">
           {/* Brand & School Logo */}
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl overflow-hidden bg-white border border-slate-200 shadow-sm flex items-center justify-center p-0.5 shrink-0 hover:scale-105 transition-transform">
+            <div className="w-12 h-12 flex items-center justify-center shrink-0 hover:scale-105 transition-transform drop-shadow-xs">
               <img
-                src="/src/assets/images/sman2_samarinda_logo_1791881987088.jpg"
+                src={SCHOOL_LOGO}
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = SCHOOL_LOGO_SVG;
+                }}
                 alt="Logo SMAN 2 Samarinda"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-contain"

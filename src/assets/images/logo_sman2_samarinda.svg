@@ -1,0 +1,189 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="100%" height="100%">
+  <defs>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.15" />
+    </filter>
+  </defs>
+
+  <!-- Green Shield Body -->
+  <!-- Top notched curves, vertical sides, and pointed bottom -->
+  <path d="M 28 26 
+           C 28 14 38 4 60 4 
+           C 78 4 88 1 100 1 
+           C 112 1 122 4 140 4 
+           C 162 4 172 14 172 26 
+           L 196 26 
+           C 198 32 199 42 199 55 
+           L 199 146 
+           C 199 184 150 216 100 238 
+           C 50 216 1 184 1 146 
+           L 1 55 
+           C 1 42 2 32 4 26 
+           Z" 
+        fill="#07973a" 
+        stroke="#111111" 
+        stroke-width="2.5" 
+        stroke-linejoin="round" />
+
+  <!-- Inner Shield Border Accent -->
+  <path d="M 31 29 
+           C 31 18 40 8 60 8 
+           C 78 8 88 5 100 5 
+           C 112 5 122 8 140 8 
+           C 160 8 169 18 169 29 
+           L 192 29 
+           C 194 36 195 44 195 55 
+           L 195 144 
+           C 195 179 148 210 100 232 
+           C 52 210 5 179 5 144 
+           L 5 55 
+           C 5 44 6 36 8 29 
+           Z" 
+        fill="none" 
+        stroke="#04782e" 
+        stroke-width="1.5" />
+
+  <!-- Top Text: SMAN 2 -->
+  <text x="100" y="24" 
+        font-family="'Arial Black', Impact, sans-serif" 
+        font-weight="900" 
+        font-size="16.5" 
+        fill="#111111" 
+        text-anchor="middle" 
+        letter-spacing="0.5">SMAN 2</text>
+
+  <!-- Yellow Star -->
+  <!-- 5-pointed star centered at (100, 52) -->
+  <polygon points="100,32 106,47 122,47 109,56 114,71 100,61 86,71 91,56 78,47 94,47" 
+           fill="#ffdd00" 
+           stroke="#000000" 
+           stroke-width="1.2" 
+           stroke-linejoin="round" />
+
+  <!-- Left Wing (White with red inner edge) -->
+  <g id="left-wing">
+    <!-- Red Inner Accent -->
+    <path d="M 68 62 C 50 78 40 104 38 140 C 43 125 50 110 65 96 Z" fill="#dd1111" />
+    <!-- White Main Wing Feathers -->
+    <path d="M 62 48 
+             C 42 55 24 72 15 102 
+             C 12 114 11 128 13 138 
+             C 18 152 28 162 40 166 
+             C 32 155 27 142 27 128 
+             C 27 112 34 94 44 82 
+             C 38 95 36 110 38 126 
+             C 39 138 45 152 54 160 
+             C 49 148 48 134 50 120 
+             C 53 104 60 92 68 82 
+             C 65 92 64 104 66 118 
+             C 67 128 72 140 78 146 
+             C 74 135 74 122 75 110 
+             C 77 96 82 85 88 76 
+             Z" 
+          fill="#ffffff" 
+          stroke="#111111" 
+          stroke-width="1.2" 
+          stroke-linejoin="round" />
+  </g>
+
+  <!-- Right Wing (Mirror of left wing) -->
+  <use href="#left-wing" transform="translate(200, 0) scale(-1, 1)" />
+
+  <!-- Open Book (Light blue pages with white border) -->
+  <g id="open-book">
+    <!-- Book Shadow / Background Outline -->
+    <path d="M 100 134 C 118 122 135 125 142 129 L 142 82 C 135 78 118 75 100 87 C 82 75 65 78 58 82 L 58 129 C 65 125 82 122 100 134 Z" 
+          fill="#004415" opacity="0.3" />
+    <!-- Left Page -->
+    <path d="M 100 131 C 83 120 66 123 58 126 L 58 82 C 66 79 83 76 100 87 Z" 
+          fill="#bce1ff" 
+          stroke="#111111" 
+          stroke-width="1.4" />
+    <path d="M 98 127 C 83 118 68 121 62 123 L 62 85 C 68 82 83 80 98 89 Z" 
+          fill="#d8edff" />
+    <!-- Right Page -->
+    <path d="M 100 131 C 117 120 134 123 142 126 L 142 82 C 134 79 117 76 100 87 Z" 
+          fill="#bce1ff" 
+          stroke="#111111" 
+          stroke-width="1.4" />
+    <path d="M 102 127 C 117 118 132 121 138 123 L 138 85 C 132 82 117 80 102 89 Z" 
+          fill="#d8edff" />
+    <!-- Book Spine center line -->
+    <line x1="100" y1="87" x2="100" y2="131" stroke="#111111" stroke-width="1.5" />
+  </g>
+
+  <!-- Lotus Flower (White with blue contours, centered on book) -->
+  <g id="lotus-flower" transform="translate(100, 107)">
+    <!-- Base bulb -->
+    <path d="M 0 15 C -8 13 -12 7 -10 0 C -7 5 -3 7 0 7 C 3 7 7 5 10 0 C 12 7 8 13 0 15 Z" 
+          fill="#ffffff" stroke="#2563eb" stroke-width="1.2" />
+    <!-- Center petal -->
+    <path d="M 0 -13 C -4 -5 -5 2 0 7 C 5 2 4 -5 0 -13 Z" 
+          fill="#ffffff" stroke="#2563eb" stroke-width="1.2" />
+    <!-- Left petal -->
+    <path d="M -2 5 C -7 3 -13 -2 -11 -9 C -8 -5 -5 -1 -2 2 Z" 
+          fill="#ffffff" stroke="#2563eb" stroke-width="1.2" />
+    <!-- Right petal -->
+    <path d="M 2 5 C 7 3 13 -2 11 -9 C 8 -5 5 -1 2 2 Z" 
+          fill="#ffffff" stroke="#2563eb" stroke-width="1.2" />
+    <!-- Outer left petal -->
+    <path d="M -5 6 C -12 6 -17 1 -16 -4 C -13 -1 -9 2 -5 4 Z" 
+          fill="#ffffff" stroke="#2563eb" stroke-width="1.1" />
+    <!-- Outer right petal -->
+    <path d="M 5 6 C 12 6 17 1 16 -4 C 13 -1 9 2 5 4 Z" 
+          fill="#ffffff" stroke="#2563eb" stroke-width="1.1" />
+  </g>
+
+  <!-- Five Olympic-style Interlinked Rings (Below Book) -->
+  <g id="rings" stroke="#ffd000" stroke-width="2.6" fill="none">
+    <circle cx="76" cy="148" r="9.5" />
+    <circle cx="88" cy="151" r="9.5" />
+    <circle cx="100" cy="148" r="9.5" />
+    <circle cx="112" cy="151" r="9.5" />
+    <circle cx="124" cy="148" r="9.5" />
+  </g>
+  <!-- Thin black inner outline for rings -->
+  <g stroke="#111111" stroke-width="0.7" fill="none">
+    <circle cx="76" cy="148" r="10.8" />
+    <circle cx="88" cy="151" r="10.8" />
+    <circle cx="100" cy="148" r="10.8" />
+    <circle cx="112" cy="151" r="10.8" />
+    <circle cx="124" cy="148" r="10.8" />
+    <circle cx="76" cy="148" r="8.2" />
+    <circle cx="88" cy="151" r="8.2" />
+    <circle cx="100" cy="148" r="8.2" />
+    <circle cx="112" cy="151" r="8.2" />
+    <circle cx="124" cy="148" r="8.2" />
+  </g>
+
+  <!-- Yellow Ribbon Banner at Bottom: "SAMARINDA" -->
+  <g id="ribbon-banner">
+    <!-- Left Ribbon Fold / Tail -->
+    <polygon points="34,188 18,172 45,165 42,185" fill="#e6b800" stroke="#111111" stroke-width="1.4" />
+    <polygon points="18,172 32,182 18,198 34,188" fill="#ffd700" stroke="#111111" stroke-width="1.4" />
+    
+    <!-- Right Ribbon Fold / Tail -->
+    <polygon points="166,188 182,172 155,165 158,185" fill="#e6b800" stroke="#111111" stroke-width="1.4" />
+    <polygon points="182,172 168,182 182,198 166,188" fill="#ffd700" stroke="#111111" stroke-width="1.4" />
+
+    <!-- Main Curved Yellow Banner -->
+    <path d="M 40 185 
+             C 65 174 135 174 160 185 
+             L 155 210 
+             C 130 198 70 198 45 210 
+             Z" 
+          fill="#ffdd00" 
+          stroke="#111111" 
+          stroke-width="1.6" 
+          stroke-linejoin="round" />
+
+    <!-- Ribbon Text: SAMARINDA -->
+    <text x="100" y="200" 
+          font-family="'Arial Black', Impact, sans-serif" 
+          font-weight="900" 
+          font-size="14.5" 
+          fill="#111111" 
+          text-anchor="middle" 
+          letter-spacing="1.2">SAMARINDA</text>
+  </g>
+</svg>
