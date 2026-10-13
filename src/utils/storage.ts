@@ -5,9 +5,9 @@ const SETTINGS_KEY = 'evoting_osis_settings_v1';
 const CANDIDATES_KEY = 'evoting_osis_candidates_v1';
 const VOTERS_KEY = 'evoting_osis_voters_v1';
 const VOTES_KEY = 'evoting_osis_votes_v1';
-const VOTES_CLEARED_FLAG = 'evoting_osis_votes_cleared_zero_v1';
+const VOTES_CLEARED_FLAG = 'evoting_osis_votes_cleared_zero_v4';
 
-// Automatically ensure existing stored mock votes are emptied
+// Automatically ensure existing stored votes and ballots are completely emptied
 if (typeof window !== 'undefined' && !localStorage.getItem(VOTES_CLEARED_FLAG)) {
   localStorage.setItem(VOTES_KEY, JSON.stringify([]));
   try {

@@ -126,14 +126,10 @@ export default function App() {
               voteRecords={voteRecords}
               settings={settings}
               onRefresh={refreshAllState}
-              onResetVotes={
-                isAdminLoggedIn
-                  ? () => {
-                      resetVotingOnly();
-                      refreshAllState();
-                    }
-                  : undefined
-              }
+              onResetVotes={() => {
+                resetVotingOnly();
+                refreshAllState();
+              }}
             />
           </div>
         )}
