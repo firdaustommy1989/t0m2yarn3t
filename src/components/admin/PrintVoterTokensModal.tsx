@@ -78,16 +78,24 @@ export const PrintVoterTokensModal: React.FC<PrintVoterTokensModalProps> = ({
                 className="bg-white p-4 rounded-xl border-2 border-dashed border-slate-300 print:border-slate-400 flex flex-col justify-between shadow-xs print:shadow-none break-inside-avoid"
               >
                 <div>
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-2 mb-2">
-                    <div>
-                      <span className="text-[10px] font-bold text-blue-700 block uppercase">
-                        KARTU SUARA & TOKEN PEMILIH
-                      </span>
-                      <h4 className="text-xs font-extrabold text-slate-900 leading-tight">
-                        {settings.schoolName}
-                      </h4>
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-2 mb-2 gap-2">
+                    <div className="flex items-center gap-2">
+                      <img
+                        src="/src/assets/images/sman2_samarinda_logo_1791881987088.jpg"
+                        alt="Logo"
+                        referrerPolicy="no-referrer"
+                        className="w-7 h-7 object-contain shrink-0"
+                      />
+                      <div>
+                        <span className="text-[10px] font-bold text-blue-700 block uppercase leading-tight">
+                          KARTU SUARA & TOKEN
+                        </span>
+                        <h4 className="text-xs font-extrabold text-slate-900 leading-tight">
+                          {settings.schoolName}
+                        </h4>
+                      </div>
                     </div>
-                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 shrink-0">
                       {settings.periodYear}
                     </span>
                   </div>

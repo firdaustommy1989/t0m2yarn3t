@@ -74,7 +74,12 @@ export const VoteSuccessModal: React.FC<VoteSuccessModalProps> = ({
 
             <div className="flex items-center justify-between border-b border-slate-200/80 pb-3 mb-3">
               <div className="flex items-center gap-2">
-                <School className="w-4 h-4 text-slate-700" />
+                <img
+                  src="/src/assets/images/sman2_samarinda_logo_1791881987088.jpg"
+                  alt="Logo SMAN 2 Samarinda"
+                  referrerPolicy="no-referrer"
+                  className="w-5 h-5 object-contain shrink-0"
+                />
                 <span className="text-xs font-bold text-slate-800">{settings.schoolName}</span>
               </div>
               <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">

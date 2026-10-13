@@ -64,14 +64,22 @@ export const PrintBeritaAcaraModal: React.FC<PrintBeritaAcaraModalProps> = ({
         {/* Printable Document Sheet */}
         <div className="p-8 sm:p-12 text-slate-900 font-serif leading-relaxed bg-white print:p-0 print:m-0">
           {/* Letterhead (KOP SURAT) */}
-          <div className="border-b-4 border-double border-slate-900 pb-4 mb-6 text-center">
-            <h4 className="text-xs sm:text-sm font-sans font-bold tracking-widest uppercase text-slate-700">
-              KOMISI PEMILIHAN UMUM SISWA (KPU OSIS)
-            </h4>
-            <h2 className="text-lg sm:text-xl font-bold uppercase tracking-tight text-slate-950 mt-1">
-              {settings.schoolName}
-            </h2>
-            <p className="text-xs font-sans text-slate-600 mt-0.5">{settings.schoolAddress}</p>
+          <div className="border-b-4 border-double border-slate-900 pb-4 mb-6 flex items-center justify-center gap-4 text-center">
+            <img
+              src="/src/assets/images/sman2_samarinda_logo_1791881987088.jpg"
+              alt="Logo SMAN 2 Samarinda"
+              referrerPolicy="no-referrer"
+              className="w-16 h-16 object-contain shrink-0"
+            />
+            <div>
+              <h4 className="text-xs sm:text-sm font-sans font-bold tracking-widest uppercase text-slate-700">
+                KOMISI PEMILIHAN UMUM SISWA (KPU OSIS)
+              </h4>
+              <h2 className="text-lg sm:text-xl font-bold uppercase tracking-tight text-slate-950 mt-0.5">
+                {settings.schoolName}
+              </h2>
+              <p className="text-xs font-sans text-slate-600 mt-0.5">{settings.schoolAddress}</p>
+            </div>
           </div>
 
           {/* Title */}

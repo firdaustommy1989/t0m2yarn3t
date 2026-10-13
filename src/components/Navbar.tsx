@@ -50,8 +50,13 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-18">
           {/* Brand & School Logo */}
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-700 via-indigo-700 to-blue-900 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-              <School className="w-6 h-6" />
+            <div className="w-12 h-12 rounded-xl overflow-hidden bg-white border border-slate-200 shadow-sm flex items-center justify-center p-0.5 shrink-0 hover:scale-105 transition-transform">
+              <img
+                src="/src/assets/images/sman2_samarinda_logo_1791881987088.jpg"
+                alt="Logo SMAN 2 Samarinda"
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -62,7 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {settings.periodYear}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 font-medium truncate max-w-[200px] sm:max-w-xs md:max-w-md">
+              <p className="text-xs text-slate-500 font-semibold truncate max-w-[200px] sm:max-w-xs md:max-w-md">
                 {settings.schoolName}
               </p>
             </div>

@@ -52,8 +52,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {/* Admin Top Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-5 sm:p-7 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-5 border border-slate-800">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-blue-600/30 border border-blue-400/30 flex items-center justify-center text-blue-300 shrink-0">
-            <ShieldCheck className="w-8 h-8" />
+          <div className="w-14 h-14 rounded-2xl bg-white p-1 flex items-center justify-center shrink-0 shadow-md">
+            <img
+              src="/src/assets/images/sman2_samarinda_logo_1791881987088.jpg"
+              alt="Logo SMAN 2 Samarinda"
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-contain"
+            />
           </div>
           <div>
             <div className="flex items-center gap-2">

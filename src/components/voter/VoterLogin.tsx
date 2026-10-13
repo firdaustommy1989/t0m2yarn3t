@@ -64,12 +64,17 @@ export const VoterLogin: React.FC<VoterLoginProps> = ({ voters, settings, onLogi
       <div className="bg-white rounded-3xl shadow-xl border border-slate-200/80 overflow-hidden">
         {/* Card Header */}
         <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 p-6 text-white text-center relative">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-3 shadow-inner border border-white/20">
-            <Vote className="w-8 h-8 text-white" />
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-white p-1 mb-3 shadow-lg flex items-center justify-center">
+            <img
+              src="/src/assets/images/sman2_samarinda_logo_1791881987088.jpg"
+              alt="Logo SMAN 2 Samarinda"
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-contain"
+            />
           </div>
           <h2 className="text-xl sm:text-2xl font-black tracking-tight">MASUK BILIK SUARA</h2>
           <p className="text-blue-100 text-xs sm:text-sm mt-1">
-            Gunakan NIS/NISN & Token Pemilih Anda untuk memberikan suara
+            {settings.schoolName} — E-Voting OSIS
           </p>
         </div>
 
