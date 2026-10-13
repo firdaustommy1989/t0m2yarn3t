@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Voter, ElectionSettings } from '../../types/election';
-import { Vote, KeyRound, UserCheck, AlertCircle, Sparkles, CheckCircle2, Shield, Info } from 'lucide-react';
+import { Vote, KeyRound, UserCheck, AlertCircle, CheckCircle2, Shield } from 'lucide-react';
 
 interface VoterLoginProps {
   voters: Voter[];
@@ -12,9 +12,6 @@ export const VoterLogin: React.FC<VoterLoginProps> = ({ voters, settings, onLogi
   const [nisn, setNisn] = useState('');
   const [token, setToken] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [showDemoTokens, setShowDemoTokens] = useState(false);
-
-  const availableDemoVoters = voters.filter((v) => !v.hasVoted).slice(0, 5);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,12 +57,6 @@ export const VoterLogin: React.FC<VoterLoginProps> = ({ voters, settings, onLogi
     }
 
     onLoginSuccess(matchedVoter);
-  };
-
-  const handleUseDemoVoter = (v: Voter) => {
-    setNisn(v.nisn);
-    setToken(v.token);
-    setErrorMessage('');
   };
 
   return (
@@ -137,50 +128,8 @@ export const VoterLogin: React.FC<VoterLoginProps> = ({ voters, settings, onLogi
             </button>
           </form>
 
-          {/* Quick Demo Helper */}
-          <div className="pt-2 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={() => setShowDemoTokens(!showDemoTokens)}
-              className="w-full py-2 text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{showDemoTokens ? 'Sembunyikan Bantuan Uji Coba' : 'Klik di sini untuk Token Uji Coba Cepat'}</span>
-            </button>
-
-            {showDemoTokens && (
-              <div className="mt-2 p-3 bg-blue-50/70 border border-blue-200/60 rounded-xl space-y-2">
-                <p className="text-[11px] text-blue-900 font-semibold flex items-center gap-1">
-                  <Info className="w-3.5 h-3.5 text-blue-600" />
-                  Pilih salah satu siswa yang belum memilih untuk mencoba langsung:
-                </p>
-                <div className="space-y-1.5 max-h-40 overflow-y-auto">
-                  {availableDemoVoters.map((v) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      onClick={() => handleUseDemoVoter(v)}
-                      className="w-full text-left p-2 rounded-lg bg-white hover:bg-blue-100/60 border border-blue-100 text-xs flex items-center justify-between transition-colors cursor-pointer"
-                    >
-                      <div>
-                        <span className="font-bold text-slate-800">{v.name}</span>
-                        <span className="text-slate-500 text-[10px] ml-1.5">({v.gradeClass})</span>
-                      </div>
-                      <div className="flex items-center gap-1 font-mono font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded text-[11px]">
-                        <span>{v.token}</span>
-                      </div>
-                    </button>
-                  ))}
-                  {availableDemoVoters.length === 0 && (
-                    <p className="text-xs text-slate-500 italic">Semua pemilih simulasi telah menggunakan suaranya.</p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
           {/* Security pledge */}
-          <div className="flex items-center justify-center gap-2 text-xs text-slate-500 pt-1">
+          <div className="flex items-center justify-center gap-2 text-xs text-slate-500 pt-3 border-t border-slate-100">
             <Shield className="w-4 h-4 text-emerald-600" />
             <span>Kerahasiaan pilihan dijamin penuh secara sistem</span>
           </div>
