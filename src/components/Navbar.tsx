@@ -106,21 +106,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <BarChart3 className="w-4 h-4" />
                 <span>Quick Count</span>
               </button>
-
-              <button
-                onClick={() => onViewChange('admin')}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 ${
-                  currentView === 'admin'
-                    ? 'bg-blue-600 text-white shadow-xs font-semibold'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <ShieldCheck className="w-4 h-4" />
-                <span>Admin</span>
-                {isAdminLoggedIn && (
-                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                )}
-              </button>
             </div>
           </div>
         </div>

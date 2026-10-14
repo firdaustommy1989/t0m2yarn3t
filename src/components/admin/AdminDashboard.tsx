@@ -31,6 +31,7 @@ interface AdminDashboardProps {
   onResetData: () => void;
   onLogout: () => void;
   onOpenPublicView: () => void;
+  onOpenVoterView?: () => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -44,6 +45,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onResetData,
   onLogout,
   onOpenPublicView,
+  onOpenVoterView,
 }) => {
   const [activeTab, setActiveTab] = useState<'quick_count' | 'voters' | 'candidates' | 'settings'>('quick_count');
   const [isPrintBeritaAcaraOpen, setIsPrintBeritaAcaraOpen] = useState(false);
@@ -88,6 +90,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <FileText className="w-4 h-4" />
             <span>Cetak Berita Acara Resmi</span>
           </button>
+
+          {onOpenVoterView && (
+            <button
+              onClick={onOpenVoterView}
+              className="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="Lihat Halaman Bilik Suara Siswa"
+            >
+              <Vote className="w-4 h-4" />
+              <span className="hidden sm:inline">Halaman Depan Siswa</span>
+            </button>
+          )}
 
           <button
             onClick={onOpenPublicView}

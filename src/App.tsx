@@ -15,11 +15,20 @@ import { VoterLogin } from './components/voter/VoterLogin';
 import { VotingBooth } from './components/voter/VotingBooth';
 import { PublicQuickCountView } from './components/public/PublicQuickCountView';
 import { AdminDashboard } from './components/admin/AdminDashboard';
-import { AdminLogin } from './components/admin/AdminLogin';
-import { School, ShieldCheck, Heart } from 'lucide-react';
+import { AdminPortalPage } from './components/admin/AdminPortalPage';
+import { School, Lock } from 'lucide-react';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<AppView>('voter');
+  const [currentView, setCurrentView] = useState<AppView>(() => {
+    if (typeof window !== 'undefined' && window.location.hash.toLowerCase().includes('admin')) {
+      return 'admin';
+    }
+    if (typeof window !== 'undefined' && (window.location.hash.toLowerCase().includes('hasil') || window.location.hash.toLowerCase().includes('quick'))) {
+      return 'public_results';
+    }
+    return 'voter';
+  });
+
   const [settings, setSettings] = useState<ElectionSettings>(getSettings);
   const [candidates, setCandidates] = useState<Candidate[]>(getCandidates);
   const [voters, setVoters] = useState<Voter[]>(getVoters);
@@ -30,7 +39,6 @@ export default function App() {
 
   // Admin authentication state
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
-  const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
 
   // Sync / refresh helper
   const refreshAllState = () => {
@@ -40,27 +48,54 @@ export default function App() {
     setVoteRecords(getVoteRecords());
   };
 
-  const handleViewChange = (view: AppView) => {
-    if (view === 'admin') {
-      if (!isAdminLoggedIn) {
-        setShowAdminLoginModal(true);
-        return;
+  // URL Hash router listener
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.toLowerCase();
+      if (hash.includes('admin')) {
+        setCurrentView('admin');
+      } else if (hash.includes('hasil') || hash.includes('quick')) {
+        setCurrentView('public_results');
+      } else if (hash === '' || hash === '#' || hash === '#/' || hash.includes('vote')) {
+        setCurrentView('voter');
       }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Keyboard shortcut listener (Ctrl+Shift+A or Alt+A to access admin page)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) || (e.altKey && (e.key === 'A' || e.key === 'a'))) {
+        e.preventDefault();
+        navigateToView('admin');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const navigateToView = (view: AppView) => {
+    if (view === 'admin') {
+      window.location.hash = '/admin';
+    } else if (view === 'public_results') {
+      window.location.hash = '/hasil';
+    } else {
+      window.location.hash = '/';
     }
     setCurrentView(view);
   };
 
   const handleAdminLoginSuccess = () => {
     setIsAdminLoggedIn(true);
-    setShowAdminLoginModal(false);
     setCurrentView('admin');
   };
 
   const handleAdminLogout = () => {
     setIsAdminLoggedIn(false);
-    if (currentView === 'admin') {
-      setCurrentView('public_results');
-    }
+    navigateToView('voter');
   };
 
   const handleUpdateCandidates = (newCandidates: Candidate[]) => {
@@ -78,12 +113,50 @@ export default function App() {
     setSettings(newSettings);
   };
 
+  // If in admin view, render dedicated admin experience
+  if (currentView === 'admin') {
+    if (!isAdminLoggedIn) {
+      return (
+        <AdminPortalPage
+          settings={settings}
+          candidates={candidates}
+          voters={voters}
+          onLoginSuccess={handleAdminLoginSuccess}
+          onBackToHome={() => navigateToView('voter')}
+        />
+      );
+    }
+
+    return (
+      <div className="min-h-screen bg-slate-100/80 text-slate-900 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+        <main className="flex-1 pb-16">
+          <div className="animate-in fade-in duration-200">
+            <AdminDashboard
+              candidates={candidates}
+              voters={voters}
+              voteRecords={voteRecords}
+              settings={settings}
+              onUpdateCandidates={handleUpdateCandidates}
+              onUpdateVoters={handleUpdateVoters}
+              onUpdateSettings={handleUpdateSettings}
+              onResetData={refreshAllState}
+              onLogout={handleAdminLogout}
+              onOpenPublicView={() => navigateToView('public_results')}
+              onOpenVoterView={() => navigateToView('voter')}
+            />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Front-page views (voter & public_results)
   return (
     <div className="min-h-screen bg-slate-100/70 text-slate-900 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
-      {/* Top Navbar */}
+      {/* Front Page Top Navbar (NO Admin button per user request) */}
       <Navbar
         currentView={currentView}
-        onViewChange={handleViewChange}
+        onViewChange={navigateToView}
         settings={settings}
         isAdminLoggedIn={isAdminLoggedIn}
         onAdminLogout={handleAdminLogout}
@@ -91,7 +164,7 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 pb-16">
-        {/* VIEW 1: BILIK SUARA (E-VOTING) */}
+        {/* VIEW 1: BILIK SUARA (E-VOTING SISWA) */}
         {currentView === 'voter' && (
           <div className="animate-in fade-in duration-200">
             {!activeVoter ? (
@@ -133,27 +206,9 @@ export default function App() {
             />
           </div>
         )}
-
-        {/* VIEW 3: PANEL ADMIN */}
-        {currentView === 'admin' && isAdminLoggedIn && (
-          <div className="animate-in fade-in duration-200">
-            <AdminDashboard
-              candidates={candidates}
-              voters={voters}
-              voteRecords={voteRecords}
-              settings={settings}
-              onUpdateCandidates={handleUpdateCandidates}
-              onUpdateVoters={handleUpdateVoters}
-              onUpdateSettings={handleUpdateSettings}
-              onResetData={refreshAllState}
-              onLogout={handleAdminLogout}
-              onOpenPublicView={() => setCurrentView('public_results')}
-            />
-          </div>
-        )}
       </main>
 
-      {/* Footer */}
+      {/* Front Page Footer with Discreet Panitia Portal Link */}
       <footer className="bg-white border-t border-slate-200 py-6 text-xs text-slate-500 text-center print:hidden">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2 font-medium">
@@ -162,20 +217,22 @@ export default function App() {
               Komisi Pemilihan Umum OSIS (KPU OSIS) • {settings.schoolName}
             </span>
           </div>
-          <div className="flex items-center gap-1.5 text-slate-400">
+
+          <div className="flex items-center gap-4 text-slate-400">
             <span>Sistem E-Voting Demokrasi Sekolah Digital Luber & Jurdil</span>
+            <span className="text-slate-300">•</span>
+            {/* Discreet Admin Portal access for panitia */}
+            <button
+              onClick={() => navigateToView('admin')}
+              className="text-slate-400 hover:text-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer py-1 px-2 rounded-lg hover:bg-slate-100"
+              title="Akses Khusus Panitia KPU OSIS (Tekan Alt+A atau kunjungi #/admin)"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>Portal Panitia</span>
+            </button>
           </div>
         </div>
       </footer>
-
-      {/* Admin Passcode Modal Gatekeeper */}
-      {showAdminLoginModal && (
-        <AdminLogin
-          correctPasscode={settings.adminPasscode}
-          onLoginSuccess={handleAdminLoginSuccess}
-          onCancel={() => setShowAdminLoginModal(false)}
-        />
-      )}
     </div>
   );
 }
