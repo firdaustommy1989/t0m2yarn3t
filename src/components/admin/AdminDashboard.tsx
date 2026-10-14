@@ -395,10 +395,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             voters={voters}
             voteRecords={voteRecords}
             settings={{ ...settings, showLiveResultsToPublic: true }}
-            onResetVotes={() => {
-              resetVotingOnly();
-              onResetData();
-            }}
+            onRefresh={onResetData}
           />
         )}
 

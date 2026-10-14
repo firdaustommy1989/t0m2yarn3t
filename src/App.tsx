@@ -199,10 +199,6 @@ export default function App() {
               voteRecords={voteRecords}
               settings={settings}
               onRefresh={refreshAllState}
-              onResetVotes={() => {
-                resetVotingOnly();
-                refreshAllState();
-              }}
             />
           </div>
         )}
