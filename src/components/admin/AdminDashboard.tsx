@@ -4,6 +4,9 @@ import { resetVotingOnly } from '../../utils/storage';
 import { VotersTab } from './VotersTab';
 import { CandidatesTab } from './CandidatesTab';
 import { SettingsTab } from './SettingsTab';
+import { UploadDataTab } from './UploadDataTab';
+import { EditDataTab } from './EditDataTab';
+import { DeleteDataTab } from './DeleteDataTab';
 import { PublicQuickCountView } from '../public/PublicQuickCountView';
 import { PrintBeritaAcaraModal } from './PrintBeritaAcaraModal';
 import { SCHOOL_LOGO, SCHOOL_LOGO_SVG } from '../../utils/schoolAssets';
@@ -17,7 +20,11 @@ import {
   School,
   ShieldCheck,
   CheckCircle,
-  ExternalLink
+  ExternalLink,
+  Upload,
+  Edit2,
+  Trash2,
+  Sparkles
 } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -47,7 +54,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onOpenPublicView,
   onOpenVoterView,
 }) => {
-  const [activeTab, setActiveTab] = useState<'quick_count' | 'voters' | 'candidates' | 'settings'>('quick_count');
+  const [activeTab, setActiveTab] = useState<
+    'quick_count' | 'upload_data' | 'edit_data' | 'delete_data' | 'voters' | 'candidates' | 'settings'
+  >('quick_count');
   const [isPrintBeritaAcaraOpen, setIsPrintBeritaAcaraOpen] = useState(false);
 
   return (
@@ -120,30 +129,231 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       </div>
 
+      {/* Quick Action Navigation Cards: Upload, Edit, Hapus Data */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <button
+          onClick={() => setActiveTab('upload_data')}
+          className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between group ${
+            activeTab === 'upload_data'
+              ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20'
+              : 'bg-white hover:bg-blue-50/50 border-slate-200 text-slate-800 shadow-2xs'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                activeTab === 'upload_data'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-blue-50 text-blue-600 group-hover:bg-blue-100'
+              }`}
+            >
+              <Upload className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-xs font-black tracking-wide uppercase flex items-center gap-1.5">
+                <span>Menu Upload Data</span>
+                <span
+                  className={`text-[9px] px-1.5 py-0.2 rounded font-bold ${
+                    activeTab === 'upload_data'
+                      ? 'bg-white/25 text-white'
+                      : 'bg-blue-100 text-blue-800'
+                  }`}
+                >
+                  Excel/CSV
+                </span>
+              </div>
+              <p
+                className={`text-[11px] mt-0.5 ${
+                  activeTab === 'upload_data' ? 'text-blue-100' : 'text-slate-500'
+                }`}
+              >
+                Upload DPT, Foto Paslon, Backup
+              </p>
+            </div>
+          </div>
+          <span
+            className={`text-xs font-bold px-2 py-1 rounded-lg ${
+              activeTab === 'upload_data'
+                ? 'bg-white text-blue-700'
+                : 'bg-slate-100 text-slate-600 group-hover:bg-blue-100 group-hover:text-blue-700'
+            }`}
+          >
+            Buka &rarr;
+          </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('edit_data')}
+          className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between group ${
+            activeTab === 'edit_data'
+              ? 'bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-500/20'
+              : 'bg-white hover:bg-amber-50/50 border-slate-200 text-slate-800 shadow-2xs'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                activeTab === 'edit_data'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-amber-50 text-amber-600 group-hover:bg-amber-100'
+              }`}
+            >
+              <Edit2 className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-xs font-black tracking-wide uppercase flex items-center gap-1.5">
+                <span>Menu Edit Data</span>
+                <span
+                  className={`text-[9px] px-1.5 py-0.2 rounded font-bold ${
+                    activeTab === 'edit_data'
+                      ? 'bg-white/25 text-white'
+                      : 'bg-amber-100 text-amber-800'
+                  }`}
+                >
+                  Ubah
+                </span>
+              </div>
+              <p
+                className={`text-[11px] mt-0.5 ${
+                  activeTab === 'edit_data' ? 'text-amber-100' : 'text-slate-500'
+                }`}
+              >
+                Edit Pemilih, Paslon, Info Pemilu
+              </p>
+            </div>
+          </div>
+          <span
+            className={`text-xs font-bold px-2 py-1 rounded-lg ${
+              activeTab === 'edit_data'
+                ? 'bg-white text-amber-700'
+                : 'bg-slate-100 text-slate-600 group-hover:bg-amber-100 group-hover:text-amber-700'
+            }`}
+          >
+            Buka &rarr;
+          </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('delete_data')}
+          className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between group ${
+            activeTab === 'delete_data'
+              ? 'bg-rose-600 text-white border-rose-600 shadow-md shadow-rose-500/20'
+              : 'bg-white hover:bg-rose-50/50 border-slate-200 text-slate-800 shadow-2xs'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                activeTab === 'delete_data'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-rose-50 text-rose-600 group-hover:bg-rose-100'
+              }`}
+            >
+              <Trash2 className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-xs font-black tracking-wide uppercase flex items-center gap-1.5">
+                <span>Menu Hapus Data</span>
+                <span
+                  className={`text-[9px] px-1.5 py-0.2 rounded font-bold ${
+                    activeTab === 'delete_data'
+                      ? 'bg-white/25 text-white'
+                      : 'bg-rose-100 text-rose-800'
+                  }`}
+                >
+                  Bersihkan
+                </span>
+              </div>
+              <p
+                className={`text-[11px] mt-0.5 ${
+                  activeTab === 'delete_data' ? 'text-rose-100' : 'text-slate-500'
+                }`}
+              >
+                Hapus DPT, Reset Suara, Hapus Paslon
+              </p>
+            </div>
+          </div>
+          <span
+            className={`text-xs font-bold px-2 py-1 rounded-lg ${
+              activeTab === 'delete_data'
+                ? 'bg-white text-rose-700'
+                : 'bg-slate-100 text-slate-600 group-hover:bg-rose-100 group-hover:text-rose-700'
+            }`}
+          >
+            Buka &rarr;
+          </span>
+        </button>
+      </div>
+
       {/* Tabs Navigation */}
       <div className="flex items-center gap-2 border-b border-slate-200 overflow-x-auto pb-1 text-xs sm:text-sm">
         <button
           onClick={() => setActiveTab('quick_count')}
-          className={`flex items-center gap-2 px-4 py-3 rounded-t-2xl font-bold border-b-2 transition-all whitespace-nowrap cursor-pointer ${
+          className={`flex items-center gap-2 px-3.5 py-3 rounded-t-2xl font-bold border-b-2 transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'quick_count'
               ? 'border-blue-600 text-blue-600 bg-white shadow-2xs'
               : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <BarChart3 className="w-4 h-4" />
-          <span>Hasil & Quick Count Suara</span>
+          <span>Hasil & Quick Count</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('upload_data')}
+          className={`flex items-center gap-2 px-3.5 py-3 rounded-t-2xl font-bold border-b-2 transition-all whitespace-nowrap cursor-pointer ${
+            activeTab === 'upload_data'
+              ? 'border-blue-600 text-blue-600 bg-white shadow-2xs'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <Upload className="w-4 h-4" />
+          <span>Upload Data</span>
+          <span className="px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[10px] font-bold">
+            Impor
+          </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('edit_data')}
+          className={`flex items-center gap-2 px-3.5 py-3 rounded-t-2xl font-bold border-b-2 transition-all whitespace-nowrap cursor-pointer ${
+            activeTab === 'edit_data'
+              ? 'border-blue-600 text-blue-600 bg-white shadow-2xs'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <Edit2 className="w-4 h-4" />
+          <span>Edit Data</span>
+          <span className="px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold">
+            Ubah
+          </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('delete_data')}
+          className={`flex items-center gap-2 px-3.5 py-3 rounded-t-2xl font-bold border-b-2 transition-all whitespace-nowrap cursor-pointer ${
+            activeTab === 'delete_data'
+              ? 'border-blue-600 text-blue-600 bg-white shadow-2xs'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <Trash2 className="w-4 h-4 text-rose-500" />
+          <span>Hapus Data</span>
+          <span className="px-1.5 py-0.5 rounded-full bg-rose-50 text-rose-700 text-[10px] font-bold">
+            Reset
+          </span>
         </button>
 
         <button
           onClick={() => setActiveTab('voters')}
-          className={`flex items-center gap-2 px-4 py-3 rounded-t-2xl font-bold border-b-2 transition-all whitespace-nowrap cursor-pointer ${
+          className={`flex items-center gap-2 px-3.5 py-3 rounded-t-2xl font-bold border-b-2 transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'voters'
               ? 'border-blue-600 text-blue-600 bg-white shadow-2xs'
               : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <Users className="w-4 h-4" />
-          <span>Daftar Pemilih (DPT) & Upload</span>
+          <span>Tabel DPT & Kartu</span>
           <span className="px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px]">
             {voters.length}
           </span>
@@ -151,7 +361,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('candidates')}
-          className={`flex items-center gap-2 px-4 py-3 rounded-t-2xl font-bold border-b-2 transition-all whitespace-nowrap cursor-pointer ${
+          className={`flex items-center gap-2 px-3.5 py-3 rounded-t-2xl font-bold border-b-2 transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'candidates'
               ? 'border-blue-600 text-blue-600 bg-white shadow-2xs'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -166,14 +376,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('settings')}
-          className={`flex items-center gap-2 px-4 py-3 rounded-t-2xl font-bold border-b-2 transition-all whitespace-nowrap cursor-pointer ${
+          className={`flex items-center gap-2 px-3.5 py-3 rounded-t-2xl font-bold border-b-2 transition-all whitespace-nowrap cursor-pointer ${
             activeTab === 'settings'
               ? 'border-blue-600 text-blue-600 bg-white shadow-2xs'
               : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <Settings className="w-4 h-4" />
-          <span>Pengaturan & Database</span>
+          <span>Pengaturan</span>
         </button>
       </div>
 
@@ -189,6 +399,42 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               resetVotingOnly();
               onResetData();
             }}
+          />
+        )}
+
+        {activeTab === 'upload_data' && (
+          <UploadDataTab
+            voters={voters}
+            candidates={candidates}
+            settings={settings}
+            onUpdateVoters={onUpdateVoters}
+            onUpdateCandidates={onUpdateCandidates}
+            onRefreshAll={onResetData}
+            onNavigateToTab={(tab) => setActiveTab(tab as any)}
+          />
+        )}
+
+        {activeTab === 'edit_data' && (
+          <EditDataTab
+            voters={voters}
+            candidates={candidates}
+            settings={settings}
+            onUpdateVoters={onUpdateVoters}
+            onUpdateCandidates={onUpdateCandidates}
+            onUpdateSettings={onUpdateSettings}
+          />
+        )}
+
+        {activeTab === 'delete_data' && (
+          <DeleteDataTab
+            voters={voters}
+            candidates={candidates}
+            voteRecords={voteRecords}
+            settings={settings}
+            onUpdateVoters={onUpdateVoters}
+            onUpdateCandidates={onUpdateCandidates}
+            onResetData={onResetData}
+            onNavigateToTab={(tab) => setActiveTab(tab as any)}
           />
         )}
 
