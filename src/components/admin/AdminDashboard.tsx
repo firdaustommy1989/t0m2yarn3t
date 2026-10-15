@@ -493,6 +493,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             voters={voters}
             settings={settings}
             onUpdateVoters={handleUpdateVotersWrapped}
+            onOpenVoterView={onOpenVoterView}
+            onOpenPublicView={onOpenPublicView}
           />
         )}
 
@@ -500,6 +502,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <CandidatesTab
             candidates={candidates}
             onUpdateCandidates={handleUpdateCandidatesWrapped}
+            onOpenVoterView={onOpenVoterView}
+            onOpenPublicView={onOpenPublicView}
           />
         )}
 
@@ -508,6 +512,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             settings={settings}
             onUpdateSettings={handleUpdateSettingsWrapped}
             onResetData={handleResetDataWrapped}
+            onOpenVoterView={onOpenVoterView}
+            onOpenPublicView={onOpenPublicView}
           />
         )}
       </div>

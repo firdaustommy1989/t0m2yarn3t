@@ -156,21 +156,37 @@ export default function App() {
 
   const handleUpdateCandidates = async (newCandidates: Candidate[]) => {
     setCandidates(newCandidates);
-    await saveCandidatesSync(newCandidates);
+    try {
+      await saveCandidatesSync(newCandidates);
+    } catch (err) {
+      console.warn('Sync candidates warning:', err);
+    }
   };
 
   const handleUpdateVoters = async (newVoters: Voter[]) => {
     setVoters(newVoters);
-    await saveVotersSync(newVoters);
+    try {
+      await saveVotersSync(newVoters);
+    } catch (err) {
+      console.warn('Sync voters warning:', err);
+    }
   };
 
   const handleUpdateSettings = async (newSettings: ElectionSettings) => {
     setSettings(newSettings);
-    await saveSettingsSync(newSettings);
+    try {
+      await saveSettingsSync(newSettings);
+    } catch (err) {
+      console.warn('Sync settings warning:', err);
+    }
   };
 
   const handleResetData = async () => {
-    await resetVotingOnlySync();
+    try {
+      await resetVotingOnlySync();
+    } catch (err) {
+      console.warn('Reset voting warning:', err);
+    }
     refreshAllState();
   };
 

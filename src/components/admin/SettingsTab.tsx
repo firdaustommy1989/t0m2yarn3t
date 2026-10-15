@@ -2,18 +2,22 @@ import React, { useState } from 'react';
 import { ElectionSettings } from '../../types/election';
 import { exportBackupJSON, importBackupJSON, resetVotingOnly, resetAllToDefault } from '../../utils/storage';
 import { resetVotingOnlySync, resetAllToDefaultSync } from '../../services/electionDb';
-import { Settings, Shield, School, Save, Database, Download, Upload, AlertTriangle, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Settings, Shield, School, Save, Database, Download, Upload, AlertTriangle, RefreshCw, CheckCircle2, Vote, BarChart3 } from 'lucide-react';
 
 interface SettingsTabProps {
   settings: ElectionSettings;
   onUpdateSettings: (settings: ElectionSettings) => void;
   onResetData: () => void;
+  onOpenVoterView?: () => void;
+  onOpenPublicView?: () => void;
 }
 
 export const SettingsTab: React.FC<SettingsTabProps> = ({
   settings,
   onUpdateSettings,
   onResetData,
+  onOpenVoterView,
+  onOpenPublicView,
 }) => {
   const [formData, setFormData] = useState<ElectionSettings>({ ...settings });
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -83,9 +87,33 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
   return (
     <div className="space-y-8 max-w-4xl">
       {saveSuccess && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-semibold flex items-center gap-2 animate-in fade-in">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-          <span>Pengaturan pemilihan berhasil disimpan dan diterapkan!</span>
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+            <span className="font-bold">Pengaturan pemilihan berhasil disimpan dan disinkronkan ke seluruh perangkat!</span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {onOpenVoterView && (
+              <button
+                type="button"
+                onClick={onOpenVoterView}
+                className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+              >
+                <Vote className="w-3.5 h-3.5" />
+                <span>Lihat Bilik Suara</span>
+              </button>
+            )}
+            {onOpenPublicView && (
+              <button
+                type="button"
+                onClick={onOpenPublicView}
+                className="px-3 py-1.5 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+              >
+                <BarChart3 className="w-3.5 h-3.5" />
+                <span>Lihat Quick Count</span>
+              </button>
+            )}
+          </div>
         </div>
       )}
 

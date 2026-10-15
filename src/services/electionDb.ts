@@ -209,12 +209,15 @@ export function subscribeCandidates(
         list.push(sanitizeCandidate(docSnap.data() as Candidate));
       });
       list.sort((a, b) => a.candidateNumber - b.candidateNumber);
+
       if (list.length > 0) {
         saveLocalCandidates(list);
         callback(list);
+      } else if (snapshot.metadata.fromCache && getLocalCandidates().length > 0) {
+        callback(getLocalCandidates());
       } else {
-        const fallback = getLocalCandidates();
-        callback(fallback);
+        saveLocalCandidates([]);
+        callback([]);
       }
     },
     (error) => {
@@ -257,12 +260,15 @@ export function subscribeVoters(
         if (classComp !== 0) return classComp;
         return a.name.localeCompare(b.name);
       });
+
       if (list.length > 0) {
         saveLocalVoters(list);
         callback(list);
+      } else if (snapshot.metadata.fromCache && getLocalVoters().length > 0) {
+        callback(getLocalVoters());
       } else {
-        const fallback = getLocalVoters();
-        callback(fallback);
+        saveLocalVoters([]);
+        callback([]);
       }
     },
     (error) => {

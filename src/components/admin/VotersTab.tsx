@@ -22,19 +22,25 @@ import {
   AlertTriangle,
   CheckSquare,
   X,
-  FileText
+  FileText,
+  Vote,
+  BarChart3
 } from 'lucide-react';
 
 interface VotersTabProps {
   voters: Voter[];
   settings: ElectionSettings;
   onUpdateVoters: (newVoters: Voter[]) => void;
+  onOpenVoterView?: () => void;
+  onOpenPublicView?: () => void;
 }
 
 export const VotersTab: React.FC<VotersTabProps> = ({
   voters,
   settings,
   onUpdateVoters,
+  onOpenVoterView,
+  onOpenPublicView,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'voted' | 'not_voted'>('all');

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Voter, Candidate, ElectionSettings } from '../../types/election';
 import { generateToken } from '../../utils/storage';
+import { compressImageFile } from '../../utils/imageHelper';
 import {
   Edit2,
   Users,
@@ -22,7 +23,9 @@ import {
   School,
   Calendar,
   Lock,
-  BarChart3
+  BarChart3,
+  Upload,
+  Image
 } from 'lucide-react';
 
 interface EditDataTabProps {
@@ -72,6 +75,26 @@ export const EditDataTab: React.FC<EditDataTabProps> = ({
     return candidates.length > 0 ? { ...candidates[0] } : null;
   });
   const [candidateSuccessMsg, setCandidateSuccessMsg] = useState<string | null>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCandidatePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingCandidate) return;
+
+    try {
+      const compressed = await compressImageFile(file, 600, 600, 0.82);
+      setEditingCandidate({ ...editingCandidate, photoUrl: compressed });
+    } catch {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setEditingCandidate({
+          ...editingCandidate,
+          photoUrl: event.target?.result as string,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Settings editing state
   const [formSettings, setFormSettings] = useState<ElectionSettings>({ ...settings });
@@ -677,6 +700,66 @@ export const EditDataTab: React.FC<EditDataTabProps> = ({
                               style={{ backgroundColor: color }}
                             />
                           ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Candidate Photo & Upload */}
+                    <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-3">
+                      <label className="block text-xs font-bold text-slate-700">
+                        Foto Resmi Pasangan Calon (Tampil di Bilik Suara Siswa):
+                      </label>
+                      <div className="flex flex-col sm:flex-row items-center gap-4">
+                        <div
+                          className="w-20 h-24 rounded-xl overflow-hidden shrink-0 border border-slate-200 bg-slate-100 shadow-xs"
+                          style={{ borderTop: `4px solid ${editingCandidate.accentColor}` }}
+                        >
+                          <img
+                            src={editingCandidate.photoUrl}
+                            alt="Foto Paslon"
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).src =
+                                'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80';
+                            }}
+                          />
+                        </div>
+                        <div className="flex-1 w-full space-y-2">
+                          <input
+                            type="file"
+                            ref={photoInputRef}
+                            accept="image/*"
+                            onChange={handleCandidatePhotoUpload}
+                            className="hidden"
+                          />
+                          <div className="flex flex-wrap items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => photoInputRef.current?.click()}
+                              className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                            >
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>Unggah Foto Baru (Auto-Kompres)</span>
+                            </button>
+                            <span className="text-[11px] text-slate-400">
+                              Otomatis dikompres &lt; 150KB untuk kecepatan loading siswa
+                            </span>
+                          </div>
+                          <div>
+                            <input
+                              type="url"
+                              value={editingCandidate.photoUrl.startsWith('data:') ? 'Foto Lokal/Tersimpan' : editingCandidate.photoUrl}
+                              disabled={editingCandidate.photoUrl.startsWith('data:')}
+                              onChange={(e) =>
+                                setEditingCandidate({
+                                  ...editingCandidate,
+                                  photoUrl: e.target.value,
+                                })
+                              }
+                              placeholder="Atau tempel URL gambar (https://...)"
+                              className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs text-slate-600 bg-slate-50"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
