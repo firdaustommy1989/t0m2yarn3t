@@ -70,8 +70,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleUpdateCandidatesWrapped = (newCandidates: Candidate[]) => {
     onUpdateCandidates(newCandidates);
     setRecentChangeNotice({
-      title: 'Perubahan Paslon Tersimpan!',
-      message: 'Foto, data nama, visi misi, atau nomor urut paslon telah langsung berubah di Halaman Depan Siswa dan Quick Count.',
+      title: 'Tersinkronisasi ke Semua Perangkat & Browser!',
+      message: 'Perubahan Paslon (foto, nama, nomor urut, visi-misi) langsung tampil serentak di halaman siswa dan quick count seluruh perangkat.',
       type: 'candidate',
     });
   };
@@ -79,8 +79,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleUpdateVotersWrapped = (newVoters: Voter[]) => {
     onUpdateVoters(newVoters);
     setRecentChangeNotice({
-      title: 'Perubahan Data Pemilih (DPT) Tersimpan!',
-      message: 'Data pemilih dan status partisipasi telah langsung terupdate di seluruh sistem.',
+      title: 'DPT Tersinkronisasi ke Semua Perangkat!',
+      message: 'Perubahan data pemilih dan status hak suara langsung terupdate di semua perangkat dan bilik suara.',
       type: 'voter',
     });
   };
@@ -88,8 +88,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleUpdateSettingsWrapped = (newSettings: ElectionSettings) => {
     onUpdateSettings(newSettings);
     setRecentChangeNotice({
-      title: 'Pengaturan Pemilihan Tersimpan!',
-      message: 'Judul sekolah, periode, dan konfigurasi pemilihan telah langsung berubah di halaman depan siswa.',
+      title: 'Pengaturan Tersinkron ke Semua Perangkat!',
+      message: 'Judul pemilihan, identitas sekolah, dan jadwal langsung berubah di semua browser dan gawai pengguna.',
       type: 'settings',
     });
   };
@@ -97,8 +97,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleResetDataWrapped = () => {
     onResetData();
     setRecentChangeNotice({
-      title: 'Kotak Suara Berhasil Direset!',
-      message: 'Perolehan suara di Halaman Depan Siswa dan Quick Count telah kembali ke 0 secara real-time.',
+      title: 'Kotak Suara Direset di Semua Perangkat!',
+      message: 'Perolehan suara di semua bilik suara dan layar quick count kembali ke 0 secara serentak.',
       type: 'reset',
     });
   };

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Candidate } from '../../types/election';
+import { compressImageFile } from '../../utils/imageHelper';
 import { Plus, Edit2, Trash2, Image, Sparkles, Award, CheckCircle, Users, X, Upload } from 'lucide-react';
 
 interface CandidatesTabProps {
@@ -72,18 +73,26 @@ export const CandidatesTab: React.FC<CandidatesTabProps> = ({
     setIsAddingNew(false);
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
+    try {
+      const compressed = await compressImageFile(file, 600, 600, 0.82);
       setFormCandidate((prev) => ({
         ...prev,
-        photoUrl: event.target?.result as string,
+        photoUrl: compressed,
       }));
-    };
-    reader.readAsDataURL(file);
+    } catch {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setFormCandidate((prev) => ({
+          ...prev,
+          photoUrl: event.target?.result as string,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   // Missions dynamic handler

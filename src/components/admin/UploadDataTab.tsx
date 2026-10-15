@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Voter, Candidate, ElectionSettings } from '../../types/election';
 import { parseVotersCSV, generateCSVTemplate, downloadCSV, ParseCSVResult } from '../../utils/csvHelper';
 import { generateToken, importBackupJSON } from '../../utils/storage';
+import { compressImageFile } from '../../utils/imageHelper';
 import { saveSettingsSync, saveCandidatesSync, saveVotersSync } from '../../services/electionDb';
 import {
   Upload,
@@ -127,16 +128,21 @@ export const UploadDataTab: React.FC<UploadDataTabProps> = ({
   };
 
   // Handle Candidate Photo File
-  const handleCandidatePhotoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCandidatePhotoFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const dataUrl = event.target?.result as string;
-      setCandidatePhotoPreview(dataUrl);
-    };
-    reader.readAsDataURL(file);
+    try {
+      const compressed = await compressImageFile(file, 600, 600, 0.82);
+      setCandidatePhotoPreview(compressed);
+    } catch {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target?.result as string;
+        setCandidatePhotoPreview(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSaveCandidatePhoto = () => {

@@ -80,11 +80,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Navigation Controls */}
           <div className="flex items-center gap-2 sm:gap-3">
             <span
-              className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
-              title="Perubahan data dan hasil suara tersinkronisasi otomatis antar semua perangkat"
+              className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs"
+              title="Perubahan data dari admin dan hasil suara tersinkronisasi otomatis antar semua perangkat dan browser secara real-time"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              Multi-Perangkat Aktif
+              <span className="hidden xs:inline">Live Multi-Perangkat</span>
+              <span className="xs:hidden">Live Cloud</span>
             </span>
 
             <div className="hidden lg:block mr-1">{getStatusBadge()}</div>

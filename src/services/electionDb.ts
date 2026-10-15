@@ -34,6 +34,82 @@ import {
 
 const SETTINGS_DOC_ID = 'main';
 
+// BroadcastChannel for instant zero-latency multi-tab updates on the same device
+let broadcastChannel: BroadcastChannel | null = null;
+try {
+  if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+    broadcastChannel = new BroadcastChannel('evoting_cross_device_sync');
+  }
+} catch {
+  // BroadcastChannel unavailable
+}
+
+function broadcastLocalChange(type: 'settings' | 'candidates' | 'voters' | 'votes') {
+  try {
+    broadcastChannel?.postMessage({ type, timestamp: Date.now() });
+  } catch {}
+}
+
+/**
+ * Sanitizers to guarantee no 'undefined' fields ever cause Firestore WriteBatch to reject operations
+ */
+export function sanitizeSettings(settings: ElectionSettings): ElectionSettings {
+  return {
+    schoolName: settings.schoolName || DEFAULT_SETTINGS.schoolName,
+    schoolAddress: settings.schoolAddress || DEFAULT_SETTINGS.schoolAddress,
+    electionTitle: settings.electionTitle || DEFAULT_SETTINGS.electionTitle,
+    periodYear: settings.periodYear || DEFAULT_SETTINGS.periodYear,
+    status: settings.status || 'active',
+    startDate: settings.startDate || DEFAULT_SETTINGS.startDate,
+    endDate: settings.endDate || DEFAULT_SETTINGS.endDate,
+    showLiveResultsToPublic: Boolean(settings.showLiveResultsToPublic),
+    adminPasscode: settings.adminPasscode || 'admin123',
+    principalName: settings.principalName || DEFAULT_SETTINGS.principalName,
+    chiefCommitteeName: settings.chiefCommitteeName || DEFAULT_SETTINGS.chiefCommitteeName,
+    advisorName: settings.advisorName || DEFAULT_SETTINGS.advisorName,
+  };
+}
+
+export function sanitizeCandidate(candidate: Candidate): Candidate {
+  return {
+    id: candidate.id,
+    candidateNumber: Number(candidate.candidateNumber) || 1,
+    chairmanName: candidate.chairmanName || '',
+    chairmanClass: candidate.chairmanClass || '',
+    viceChairmanName: candidate.viceChairmanName || '',
+    viceChairmanClass: candidate.viceChairmanClass || '',
+    tagline: candidate.tagline || '',
+    photoUrl: candidate.photoUrl || '',
+    vision: candidate.vision || '',
+    missions: Array.isArray(candidate.missions) ? candidate.missions.filter(Boolean) : [],
+    workPrograms: Array.isArray(candidate.workPrograms) ? candidate.workPrograms.filter(Boolean) : [],
+    accentColor: candidate.accentColor || '#2563eb',
+  };
+}
+
+export function sanitizeVoter(voter: Voter): Voter {
+  return {
+    id: voter.id,
+    nisn: voter.nisn || '',
+    name: voter.name || '',
+    gradeClass: voter.gradeClass || 'Umum',
+    token: voter.token || '',
+    hasVoted: Boolean(voter.hasVoted),
+    votedAt: voter.votedAt || '',
+    receiptCode: voter.receiptCode || '',
+  };
+}
+
+export function sanitizeVoteRecord(record: VoteRecord): VoteRecord {
+  return {
+    id: record.id,
+    candidateId: record.candidateId,
+    timestamp: record.timestamp,
+    voterGradeClass: record.voterGradeClass || 'Umum',
+    receiptCode: record.receiptCode || '',
+  };
+}
+
 /**
  * Initialize Firestore data if this is a fresh database instance.
  * Ensures all connected devices immediately share the official default data.
@@ -45,7 +121,7 @@ export async function initializeFirestoreIfNeeded(): Promise<void> {
 
     if (!settingsSnap.exists()) {
       const currentSettings = getLocalSettings();
-      await setDoc(settingsRef, currentSettings || DEFAULT_SETTINGS);
+      await setDoc(settingsRef, sanitizeSettings(currentSettings || DEFAULT_SETTINGS));
     }
 
     const candidatesRef = collection(db, 'candidates');
@@ -55,7 +131,7 @@ export async function initializeFirestoreIfNeeded(): Promise<void> {
       const listToSeed = currentCandidates.length > 0 ? currentCandidates : DEFAULT_CANDIDATES;
       const batch = writeBatch(db);
       listToSeed.forEach((candidate) => {
-        batch.set(doc(db, 'candidates', candidate.id), candidate);
+        batch.set(doc(db, 'candidates', candidate.id), sanitizeCandidate(candidate));
       });
       await batch.commit();
     }
@@ -67,7 +143,7 @@ export async function initializeFirestoreIfNeeded(): Promise<void> {
       const listToSeed = currentVoters.length > 0 ? currentVoters : DEFAULT_VOTERS;
       const batch = writeBatch(db);
       listToSeed.forEach((voter) => {
-        batch.set(doc(db, 'voters', voter.id), voter);
+        batch.set(doc(db, 'voters', voter.id), sanitizeVoter(voter));
       });
       await batch.commit();
     }
@@ -85,11 +161,11 @@ export function subscribeSettings(
 ): Unsubscribe {
   const settingsRef = doc(db, 'settings', SETTINGS_DOC_ID);
 
-  return onSnapshot(
+  const unsubFirestore = onSnapshot(
     settingsRef,
     (snapshot) => {
       if (snapshot.exists()) {
-        const data = snapshot.data() as ElectionSettings;
+        const data = sanitizeSettings(snapshot.data() as ElectionSettings);
         saveLocalSettings(data);
         callback(data);
       } else {
@@ -102,6 +178,18 @@ export function subscribeSettings(
       callback(getLocalSettings());
     }
   );
+
+  const handleBroadcast = (e: MessageEvent) => {
+    if (e.data?.type === 'settings') {
+      callback(getLocalSettings());
+    }
+  };
+  broadcastChannel?.addEventListener('message', handleBroadcast);
+
+  return () => {
+    unsubFirestore();
+    broadcastChannel?.removeEventListener('message', handleBroadcast);
+  };
 }
 
 /**
@@ -113,22 +201,39 @@ export function subscribeCandidates(
 ): Unsubscribe {
   const candidatesRef = collection(db, 'candidates');
 
-  return onSnapshot(
+  const unsubFirestore = onSnapshot(
     candidatesRef,
     (snapshot) => {
       const list: Candidate[] = [];
       snapshot.forEach((docSnap) => {
-        list.push(docSnap.data() as Candidate);
+        list.push(sanitizeCandidate(docSnap.data() as Candidate));
       });
       list.sort((a, b) => a.candidateNumber - b.candidateNumber);
-      saveLocalCandidates(list);
-      callback(list);
+      if (list.length > 0) {
+        saveLocalCandidates(list);
+        callback(list);
+      } else {
+        const fallback = getLocalCandidates();
+        callback(fallback);
+      }
     },
     (error) => {
       console.warn('Candidates subscription fallback to local cache:', error.message);
       callback(getLocalCandidates());
     }
   );
+
+  const handleBroadcast = (e: MessageEvent) => {
+    if (e.data?.type === 'candidates') {
+      callback(getLocalCandidates());
+    }
+  };
+  broadcastChannel?.addEventListener('message', handleBroadcast);
+
+  return () => {
+    unsubFirestore();
+    broadcastChannel?.removeEventListener('message', handleBroadcast);
+  };
 }
 
 /**
@@ -140,27 +245,43 @@ export function subscribeVoters(
 ): Unsubscribe {
   const votersRef = collection(db, 'voters');
 
-  return onSnapshot(
+  const unsubFirestore = onSnapshot(
     votersRef,
     (snapshot) => {
       const list: Voter[] = [];
       snapshot.forEach((docSnap) => {
-        list.push(docSnap.data() as Voter);
+        list.push(sanitizeVoter(docSnap.data() as Voter));
       });
-      // Sort by gradeClass then name
       list.sort((a, b) => {
         const classComp = a.gradeClass.localeCompare(b.gradeClass);
         if (classComp !== 0) return classComp;
         return a.name.localeCompare(b.name);
       });
-      saveLocalVoters(list);
-      callback(list);
+      if (list.length > 0) {
+        saveLocalVoters(list);
+        callback(list);
+      } else {
+        const fallback = getLocalVoters();
+        callback(fallback);
+      }
     },
     (error) => {
       console.warn('Voters subscription fallback to local cache:', error.message);
       callback(getLocalVoters());
     }
   );
+
+  const handleBroadcast = (e: MessageEvent) => {
+    if (e.data?.type === 'voters') {
+      callback(getLocalVoters());
+    }
+  };
+  broadcastChannel?.addEventListener('message', handleBroadcast);
+
+  return () => {
+    unsubFirestore();
+    broadcastChannel?.removeEventListener('message', handleBroadcast);
+  };
 }
 
 /**
@@ -172,12 +293,12 @@ export function subscribeVoteRecords(
 ): Unsubscribe {
   const votesRef = collection(db, 'votes');
 
-  return onSnapshot(
+  const unsubFirestore = onSnapshot(
     votesRef,
     (snapshot) => {
       const list: VoteRecord[] = [];
       snapshot.forEach((docSnap) => {
-        list.push(docSnap.data() as VoteRecord);
+        list.push(sanitizeVoteRecord(docSnap.data() as VoteRecord));
       });
       // Sort newest first
       list.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
@@ -189,36 +310,55 @@ export function subscribeVoteRecords(
       callback(getLocalVoteRecords());
     }
   );
+
+  const handleBroadcast = (e: MessageEvent) => {
+    if (e.data?.type === 'votes') {
+      callback(getLocalVoteRecords());
+    }
+  };
+  broadcastChannel?.addEventListener('message', handleBroadcast);
+
+  return () => {
+    unsubFirestore();
+    broadcastChannel?.removeEventListener('message', handleBroadcast);
+  };
 }
 
 /**
  * Save settings to both Cloud Firestore and local storage.
+ * Propagates instantly to all other browsers and devices.
  */
 export async function saveSettingsSync(settings: ElectionSettings): Promise<void> {
-  saveLocalSettings(settings);
+  const clean = sanitizeSettings(settings);
+  saveLocalSettings(clean);
+  broadcastLocalChange('settings');
   try {
     const settingsRef = doc(db, 'settings', SETTINGS_DOC_ID);
-    await setDoc(settingsRef, settings);
+    await setDoc(settingsRef, clean);
   } catch (error) {
+    console.error('Error saving settings to cloud:', error);
     handleFirestoreError(error, OperationType.WRITE, `settings/${SETTINGS_DOC_ID}`);
   }
 }
 
 /**
  * Save candidates to both Cloud Firestore and local storage.
+ * Propagates instantly to all other browsers and devices.
  */
 export async function saveCandidatesSync(candidates: Candidate[]): Promise<void> {
-  saveLocalCandidates(candidates);
+  const cleanCandidates = candidates.map(sanitizeCandidate);
+  saveLocalCandidates(cleanCandidates);
+  broadcastLocalChange('candidates');
   try {
     // Read existing candidate doc IDs to clean up removed candidates
     const snapshot = await getDocs(collection(db, 'candidates'));
     const existingIds = new Set(snapshot.docs.map((d) => d.id));
-    const newIds = new Set(candidates.map((c) => c.id));
+    const newIds = new Set(cleanCandidates.map((c) => c.id));
 
     const batch = writeBatch(db);
 
     // Set new/updated candidates
-    candidates.forEach((candidate) => {
+    cleanCandidates.forEach((candidate) => {
       batch.set(doc(db, 'candidates', candidate.id), candidate);
     });
 
@@ -231,6 +371,7 @@ export async function saveCandidatesSync(candidates: Candidate[]): Promise<void>
 
     await batch.commit();
   } catch (error) {
+    console.error('Error saving candidates to cloud:', error);
     handleFirestoreError(error, OperationType.WRITE, 'candidates');
   }
 }
@@ -240,11 +381,13 @@ export async function saveCandidatesSync(candidates: Candidate[]): Promise<void>
  * Handles Firestore batch limit of 500 operations per batch.
  */
 export async function saveVotersSync(voters: Voter[]): Promise<void> {
-  saveLocalVoters(voters);
+  const cleanVoters = voters.map(sanitizeVoter);
+  saveLocalVoters(cleanVoters);
+  broadcastLocalChange('voters');
   try {
     const snapshot = await getDocs(collection(db, 'voters'));
     const existingIds = new Set(snapshot.docs.map((d) => d.id));
-    const newIds = new Set(voters.map((v) => v.id));
+    const newIds = new Set(cleanVoters.map((v) => v.id));
 
     // Delete removed voters in batches of 400
     const toDelete = Array.from(existingIds).filter((id) => !newIds.has(id));
@@ -257,14 +400,15 @@ export async function saveVotersSync(voters: Voter[]): Promise<void> {
     }
 
     // Set/Update all voters in batches of 400
-    for (let i = 0; i < voters.length; i += 400) {
+    for (let i = 0; i < cleanVoters.length; i += 400) {
       const batch = writeBatch(db);
-      voters.slice(i, i + 400).forEach((voter) => {
+      cleanVoters.slice(i, i + 400).forEach((voter) => {
         batch.set(doc(db, 'voters', voter.id), voter);
       });
       await batch.commit();
     }
   } catch (error) {
+    console.error('Error saving voters to cloud:', error);
     handleFirestoreError(error, OperationType.WRITE, 'voters');
   }
 }
@@ -298,19 +442,12 @@ export async function castVoteSync(
     const pad = (n: number) => String(n).padStart(2, '0');
     const votedAt = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 
-    const updatedVoter: Voter = {
-      ...voterData,
-      hasVoted: true,
-      votedAt,
-      receiptCode,
-    };
-
     const voteId = `vote_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     const newRecord: VoteRecord = {
       id: voteId,
       candidateId,
       timestamp: votedAt,
-      voterGradeClass: voterData.gradeClass,
+      voterGradeClass: voterData.gradeClass || 'Umum',
       receiptCode,
     };
 
@@ -320,8 +457,11 @@ export async function castVoteSync(
       votedAt,
       receiptCode,
     });
-    batch.set(doc(db, 'votes', voteId), newRecord);
+    batch.set(doc(db, 'votes', voteId), sanitizeVoteRecord(newRecord));
     await batch.commit();
+
+    broadcastLocalChange('votes');
+    broadcastLocalChange('voters');
 
     return {
       success: true,
@@ -331,9 +471,11 @@ export async function castVoteSync(
     };
   } catch (error) {
     console.error('Error casting vote to cloud:', error);
-    // Fallback to local castVote if cloud is temporarily unreachable
     const { castVote } = await import('../utils/storage');
-    return castVote(voterId, candidateId);
+    const res = castVote(voterId, candidateId);
+    broadcastLocalChange('votes');
+    broadcastLocalChange('voters');
+    return res;
   }
 }
 
@@ -369,6 +511,8 @@ export async function resetVotingOnlySync(): Promise<void> {
     // Local reset
     const { resetVotingOnly } = await import('../utils/storage');
     resetVotingOnly();
+    broadcastLocalChange('votes');
+    broadcastLocalChange('voters');
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, 'votes');
   }

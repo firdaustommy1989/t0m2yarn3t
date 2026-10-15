@@ -3,7 +3,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Helper function for valid ID
     function isValidId(id) {
-      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+      return id is string && id.size() > 0 && id.size() <= 128;
     }
 
     // Default deny for unknown collections
@@ -18,26 +18,26 @@ service cloud.firestore {
 
     // Election settings
     match /settings/{settingId} {
-      allow read: if isValidId(settingId);
-      allow write: if isValidId(settingId);
+      allow get, write: if isValidId(settingId);
+      allow list: if true;
     }
 
     // Candidate pairs
     match /candidates/{candidateId} {
-      allow read: if isValidId(candidateId);
-      allow write: if isValidId(candidateId);
+      allow get, write: if isValidId(candidateId);
+      allow list: if true;
     }
 
     // Voters list (DPT)
     match /voters/{voterId} {
-      allow read: if isValidId(voterId);
-      allow write: if isValidId(voterId);
+      allow get, write: if isValidId(voterId);
+      allow list: if true;
     }
 
     // Ballots / vote records
     match /votes/{voteId} {
-      allow read: if isValidId(voteId);
-      allow write: if isValidId(voteId);
+      allow get, write: if isValidId(voteId);
+      allow list: if true;
     }
   }
 }

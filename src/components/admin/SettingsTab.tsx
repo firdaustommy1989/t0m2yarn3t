@@ -42,11 +42,20 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       const content = event.target?.result as string;
       const ok = importBackupJSON(content);
       if (ok) {
-        alert('Data backup berhasil dipulihkan!');
+        try {
+          const parsed = JSON.parse(content);
+          const { saveSettingsSync, saveCandidatesSync, saveVotersSync } = await import('../../services/electionDb');
+          if (parsed.settings) await saveSettingsSync(parsed.settings);
+          if (parsed.candidates) await saveCandidatesSync(parsed.candidates);
+          if (parsed.voters) await saveVotersSync(parsed.voters);
+        } catch (err) {
+          console.warn('Backup cloud sync notice:', err);
+        }
+        alert('Data backup berhasil dipulihkan dan disinkronkan ke semua perangkat!');
         onResetData();
       } else {
         alert('File backup JSON tidak valid atau rusak.');

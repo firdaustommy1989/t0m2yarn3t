@@ -79,11 +79,17 @@ export default function App() {
       setVoteRecords(newVotes);
     });
 
+    const handleStorageEvent = () => {
+      refreshAllState();
+    };
+    window.addEventListener('storage', handleStorageEvent);
+
     return () => {
       unsubSettings();
       unsubCandidates();
       unsubVoters();
       unsubVotes();
+      window.removeEventListener('storage', handleStorageEvent);
     };
   }, []);
 
