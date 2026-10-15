@@ -2,14 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { AppView, Candidate, ElectionSettings, Voter, VoteRecord } from './types/election';
 import {
   getSettings,
-  saveSettings,
   getCandidates,
-  saveCandidates,
   getVoters,
-  saveVoters,
   getVoteRecords,
-  resetVotingOnly,
 } from './utils/storage';
+import {
+  initializeFirestoreIfNeeded,
+  subscribeSettings,
+  subscribeCandidates,
+  subscribeVoters,
+  subscribeVoteRecords,
+  saveSettingsSync,
+  saveCandidatesSync,
+  saveVotersSync,
+  resetVotingOnlySync,
+} from './services/electionDb';
 import { Navbar } from './components/Navbar';
 import { VoterLogin } from './components/voter/VoterLogin';
 import { VotingBooth } from './components/voter/VotingBooth';
@@ -23,7 +30,11 @@ export default function App() {
     if (typeof window !== 'undefined' && window.location.hash.toLowerCase().includes('admin')) {
       return 'admin';
     }
-    if (typeof window !== 'undefined' && (window.location.hash.toLowerCase().includes('hasil') || window.location.hash.toLowerCase().includes('quick'))) {
+    if (
+      typeof window !== 'undefined' &&
+      (window.location.hash.toLowerCase().includes('hasil') ||
+        window.location.hash.toLowerCase().includes('quick'))
+    ) {
       return 'public_results';
     }
     return 'voter';
@@ -39,6 +50,42 @@ export default function App() {
 
   // Admin authentication state
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+
+  // Real-time synchronization across all devices via Cloud Firestore
+  useEffect(() => {
+    // 1. Initial check & seed if brand new database
+    initializeFirestoreIfNeeded();
+
+    // 2. Real-time subscriptions across all connected devices
+    const unsubSettings = subscribeSettings((newSettings) => {
+      setSettings(newSettings);
+    });
+
+    const unsubCandidates = subscribeCandidates((newCandidates) => {
+      setCandidates(newCandidates);
+    });
+
+    const unsubVoters = subscribeVoters((newVoters) => {
+      setVoters(newVoters);
+      // Keep activeVoter session synced if its state changes (e.g. voted on another tab)
+      setActiveVoter((curr) => {
+        if (!curr) return null;
+        const fresh = newVoters.find((v) => v.id === curr.id);
+        return fresh || curr;
+      });
+    });
+
+    const unsubVotes = subscribeVoteRecords((newVotes) => {
+      setVoteRecords(newVotes);
+    });
+
+    return () => {
+      unsubSettings();
+      unsubCandidates();
+      unsubVoters();
+      unsubVotes();
+    };
+  }, []);
 
   // Sync / refresh helper
   const refreshAllState = () => {
@@ -68,7 +115,10 @@ export default function App() {
   // Keyboard shortcut listener (Ctrl+Shift+A or Alt+A to access admin page)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) || (e.altKey && (e.key === 'A' || e.key === 'a'))) {
+      if (
+        (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) ||
+        (e.altKey && (e.key === 'A' || e.key === 'a'))
+      ) {
         e.preventDefault();
         navigateToView('admin');
       }
@@ -98,19 +148,24 @@ export default function App() {
     navigateToView('voter');
   };
 
-  const handleUpdateCandidates = (newCandidates: Candidate[]) => {
-    saveCandidates(newCandidates);
+  const handleUpdateCandidates = async (newCandidates: Candidate[]) => {
     setCandidates(newCandidates);
+    await saveCandidatesSync(newCandidates);
   };
 
-  const handleUpdateVoters = (newVoters: Voter[]) => {
-    saveVoters(newVoters);
+  const handleUpdateVoters = async (newVoters: Voter[]) => {
     setVoters(newVoters);
+    await saveVotersSync(newVoters);
   };
 
-  const handleUpdateSettings = (newSettings: ElectionSettings) => {
-    saveSettings(newSettings);
+  const handleUpdateSettings = async (newSettings: ElectionSettings) => {
     setSettings(newSettings);
+    await saveSettingsSync(newSettings);
+  };
+
+  const handleResetData = async () => {
+    await resetVotingOnlySync();
+    refreshAllState();
   };
 
   // If in admin view, render dedicated admin experience
@@ -139,7 +194,7 @@ export default function App() {
               onUpdateCandidates={handleUpdateCandidates}
               onUpdateVoters={handleUpdateVoters}
               onUpdateSettings={handleUpdateSettings}
-              onResetData={refreshAllState}
+              onResetData={handleResetData}
               onLogout={handleAdminLogout}
               onOpenPublicView={() => navigateToView('public_results')}
               onOpenVoterView={() => navigateToView('voter')}
@@ -153,7 +208,7 @@ export default function App() {
   // Front-page views (voter & public_results)
   return (
     <div className="min-h-screen bg-slate-100/70 text-slate-900 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
-      {/* Front Page Top Navbar (NO Admin button per user request) */}
+      {/* Front Page Top Navbar (with real-time cloud multi-device sync indicator) */}
       <Navbar
         currentView={currentView}
         onViewChange={navigateToView}
@@ -215,7 +270,7 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-4 text-slate-400">
-            <span>Sistem E-Voting Demokrasi Sekolah Digital Luber & Jurdil</span>
+            <span>Sistem E-Voting Demokrasi Sekolah Digital • Sinkronisasi Multi-Perangkat</span>
             <span className="text-slate-300">•</span>
             {/* Discreet Admin Portal access for panitia */}
             <button

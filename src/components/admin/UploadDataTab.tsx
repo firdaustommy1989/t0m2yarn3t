@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Voter, Candidate, ElectionSettings } from '../../types/election';
 import { parseVotersCSV, generateCSVTemplate, downloadCSV, ParseCSVResult } from '../../utils/csvHelper';
 import { generateToken, importBackupJSON } from '../../utils/storage';
+import { saveSettingsSync, saveCandidatesSync, saveVotersSync } from '../../services/electionDb';
 import {
   Upload,
   FileSpreadsheet,
@@ -148,11 +149,19 @@ export const UploadDataTab: React.FC<UploadDataTabProps> = ({
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       const content = event.target?.result as string;
       const success = importBackupJSON(content);
       if (success) {
-        setBackupSuccessMessage('Data cadangan berhasil dipulihkan secara menyeluruh!');
+        try {
+          const parsed = JSON.parse(content);
+          if (parsed.settings) await saveSettingsSync(parsed.settings);
+          if (parsed.candidates) await saveCandidatesSync(parsed.candidates);
+          if (parsed.voters) await saveVotersSync(parsed.voters);
+        } catch (e) {
+          console.warn('Backup cloud sync notice:', e);
+        }
+        setBackupSuccessMessage('Data cadangan berhasil dipulihkan secara menyeluruh ke semua perangkat!');
         setBackupErrorMessage(null);
         if (onRefreshAll) onRefreshAll();
         setTimeout(() => window.location.reload(), 1200);

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Voter, Candidate, ElectionSettings, VoteRecord } from '../../types/election';
 import { resetVotingOnly, resetAllToDefault } from '../../utils/storage';
+import { resetVotingOnlySync, resetAllToDefaultSync } from '../../services/electionDb';
 import {
   Trash2,
   AlertTriangle,
@@ -126,10 +127,10 @@ export const DeleteDataTab: React.FC<DeleteDataTabProps> = ({
   };
 
   // Execution: Reset voting records
-  const executeResetVotes = () => {
-    resetVotingOnly();
+  const executeResetVotes = async () => {
+    await resetVotingOnlySync();
     onResetData();
-    setSuccessMessage('Seluruh suara masuk telah dihapus dan kotak suara kembali 0. Data nama DPT tetap aman!');
+    setSuccessMessage('Seluruh suara masuk telah dihapus dan kotak suara kembali 0 di seluruh perangkat! Data nama DPT tetap aman.');
     setConfirmModalType(null);
     setTimeout(() => setSuccessMessage(null), 4000);
   };
@@ -147,10 +148,10 @@ export const DeleteDataTab: React.FC<DeleteDataTabProps> = ({
   };
 
   // Execution: Factory reset
-  const executeFactoryReset = () => {
-    resetAllToDefault();
+  const executeFactoryReset = async () => {
+    await resetAllToDefaultSync();
     onResetData();
-    setSuccessMessage('Sistem telah dikembalikan ke setelan pabrik default.');
+    setSuccessMessage('Sistem telah dikembalikan ke setelan pabrik default di semua perangkat.');
     setConfirmModalType(null);
     setConfirmInputText('');
     setTimeout(() => window.location.reload(), 1000);

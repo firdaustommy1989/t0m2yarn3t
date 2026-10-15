@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function for valid ID
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Default deny for unknown collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Connection test document
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+
+    // Election settings
+    match /settings/{settingId} {
+      allow read: if isValidId(settingId);
+      allow write: if isValidId(settingId);
+    }
+
+    // Candidate pairs
+    match /candidates/{candidateId} {
+      allow read: if isValidId(candidateId);
+      allow write: if isValidId(candidateId);
+    }
+
+    // Voters list (DPT)
+    match /voters/{voterId} {
+      allow read: if isValidId(voterId);
+      allow write: if isValidId(voterId);
+    }
+
+    // Ballots / vote records
+    match /votes/{voteId} {
+      allow read: if isValidId(voteId);
+      allow write: if isValidId(voteId);
+    }
+  }
+}

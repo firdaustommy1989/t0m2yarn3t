@@ -1,0 +1,91 @@
+{
+  "entities": {
+    "Candidate": {
+      "title": "Candidate",
+      "description": "OSIS Chairman and Vice Chairman Candidate Pair",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "candidateNumber": { "type": "number" },
+        "chairmanName": { "type": "string", "maxLength": 200 },
+        "chairmanClass": { "type": "string", "maxLength": 50 },
+        "viceChairmanName": { "type": "string", "maxLength": 200 },
+        "viceChairmanClass": { "type": "string", "maxLength": 50 },
+        "tagline": { "type": "string", "maxLength": 500 },
+        "photoUrl": { "type": "string", "maxLength": 2048 },
+        "vision": { "type": "string", "maxLength": 2000 },
+        "missions": { "type": "array" },
+        "workPrograms": { "type": "array" },
+        "accentColor": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "candidateNumber", "chairmanName", "viceChairmanName"]
+    },
+    "Voter": {
+      "title": "Voter",
+      "description": "Student Voter in Daftar Pemilih Tetap (DPT)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "nisn": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 200 },
+        "gradeClass": { "type": "string", "maxLength": 64 },
+        "token": { "type": "string", "maxLength": 64 },
+        "hasVoted": { "type": "boolean" },
+        "votedAt": { "type": "string", "maxLength": 64 },
+        "receiptCode": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "nisn", "name", "gradeClass", "token", "hasVoted"]
+    },
+    "VoteRecord": {
+      "title": "VoteRecord",
+      "description": "Anonymous ballot vote record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "candidateId": { "type": "string", "maxLength": 128 },
+        "timestamp": { "type": "string", "maxLength": 64 },
+        "voterGradeClass": { "type": "string", "maxLength": 64 },
+        "receiptCode": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "candidateId", "timestamp", "voterGradeClass", "receiptCode"]
+    },
+    "ElectionSettings": {
+      "title": "ElectionSettings",
+      "description": "Overall election parameters, dates, and metadata",
+      "type": "object",
+      "properties": {
+        "schoolName": { "type": "string", "maxLength": 200 },
+        "schoolAddress": { "type": "string", "maxLength": 500 },
+        "electionTitle": { "type": "string", "maxLength": 200 },
+        "periodYear": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "enum": ["draft", "active", "closed"] },
+        "startDate": { "type": "string", "maxLength": 50 },
+        "endDate": { "type": "string", "maxLength": 50 },
+        "showLiveResultsToPublic": { "type": "boolean" },
+        "adminPasscode": { "type": "string", "maxLength": 100 },
+        "principalName": { "type": "string", "maxLength": 200 },
+        "chiefCommitteeName": { "type": "string", "maxLength": 200 },
+        "advisorName": { "type": "string", "maxLength": 200 }
+      },
+      "required": ["schoolName", "electionTitle", "periodYear", "status"]
+    }
+  },
+  "firestore": {
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/ElectionSettings" },
+      "description": "Election configuration"
+    },
+    "/candidates/{candidateId}": {
+      "schema": { "$ref": "#/entities/Candidate" },
+      "description": "Election candidate pairs"
+    },
+    "/voters/{voterId}": {
+      "schema": { "$ref": "#/entities/Voter" },
+      "description": "Student voters list (DPT)"
+    },
+    "/votes/{voteId}": {
+      "schema": { "$ref": "#/entities/VoteRecord" },
+      "description": "Ballots cast by voters"
+    }
+  }
+}

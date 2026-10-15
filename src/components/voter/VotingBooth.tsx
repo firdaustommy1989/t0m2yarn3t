@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Candidate, Voter, ElectionSettings } from '../../types/election';
 import { CandidateDetailModal } from './CandidateDetailModal';
 import { VoteSuccessModal } from './VoteSuccessModal';
-import { castVote } from '../../utils/storage';
+import { castVoteSync } from '../../services/electionDb';
 import { Check, Eye, UserCheck, Shield, HelpCircle, ArrowLeft, Stamp } from 'lucide-react';
 
 interface VotingBoothProps {
@@ -36,23 +36,28 @@ export const VotingBooth: React.FC<VotingBoothProps> = ({
     setIsConfirming(true);
   };
 
-  const handleConfirmVote = () => {
+  const handleConfirmVote = async () => {
     if (!selectedCandidate) return;
 
     setIsSubmitting(true);
-    const result = castVote(voter.id, selectedCandidate.id);
+    try {
+      const result = await castVoteSync(voter.id, selectedCandidate.id);
 
-    if (result.success && result.receiptCode && result.votedAt) {
-      setSuccessData({
-        receiptCode: result.receiptCode,
-        votedAt: result.votedAt,
-        candidateNumber: selectedCandidate.candidateNumber,
-        candidateName: `${selectedCandidate.chairmanName} & ${selectedCandidate.viceChairmanName}`,
-      });
-      setIsConfirming(false);
-      onVoteRecorded();
-    } else {
-      alert(result.message || 'Gagal mencatat suara. Silakan coba lagi.');
+      if (result.success && result.receiptCode && result.votedAt) {
+        setSuccessData({
+          receiptCode: result.receiptCode,
+          votedAt: result.votedAt,
+          candidateNumber: selectedCandidate.candidateNumber,
+          candidateName: `${selectedCandidate.chairmanName} & ${selectedCandidate.viceChairmanName}`,
+        });
+        setIsConfirming(false);
+        onVoteRecorded();
+      } else {
+        alert(result.message || 'Gagal mencatat suara. Silakan coba lagi.');
+        setIsSubmitting(false);
+      }
+    } catch (e: any) {
+      alert(e?.message || 'Gagal mencatat suara ke database.');
       setIsSubmitting(false);
     }
   };

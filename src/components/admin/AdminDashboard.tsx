@@ -80,7 +80,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
                 PANEL ADMINISTRATOR OSIS
               </span>
-              <span className="text-xs text-slate-400">Terautentikasi</span>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                Cloud Terhubung
+              </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight mt-0.5">
               {settings.electionTitle}

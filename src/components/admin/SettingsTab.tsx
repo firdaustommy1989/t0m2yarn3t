@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ElectionSettings } from '../../types/election';
 import { exportBackupJSON, importBackupJSON, resetVotingOnly, resetAllToDefault } from '../../utils/storage';
+import { resetVotingOnlySync, resetAllToDefaultSync } from '../../services/electionDb';
 import { Settings, Shield, School, Save, Database, Download, Upload, AlertTriangle, RefreshCw, CheckCircle2 } from 'lucide-react';
 
 interface SettingsTabProps {
@@ -54,17 +55,17 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
     reader.readAsText(file);
   };
 
-  const handleResetVotesOnly = () => {
+  const handleResetVotesOnly = async () => {
     if (confirm('PERINGATAN: Semua suara masuk akan DIHAPUS, dan status semua pemilih akan di-reset menjadi BELUM MEMILIH. Data DPT dan Kandidat tetap aman. Lanjutkan?')) {
-      resetVotingOnly();
+      await resetVotingOnlySync();
       onResetData();
-      alert('Seluruh perolehan suara berhasil di-reset!');
+      alert('Seluruh perolehan suara berhasil di-reset di semua perangkat!');
     }
   };
 
-  const handleResetEverythingDefault = () => {
-    if (confirm('PERINGATAN: Seluruh database (kandidat, DPT, suara, pengaturan) akan dikembalikan ke data simulasi bawaan awal. Lanjutkan?')) {
-      resetAllToDefault();
+  const handleResetEverythingDefault = async () => {
+    if (confirm('PERINGATAN: Seluruh database (kandidat, DPT, suara, pengaturan) akan dikembalikan ke data simulasi bawaan awal di semua perangkat. Lanjutkan?')) {
+      await resetAllToDefaultSync();
       onResetData();
       alert('Database telah dikembalikan ke data awal simulasi!');
     }
