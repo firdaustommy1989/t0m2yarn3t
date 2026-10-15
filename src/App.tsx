@@ -226,6 +226,9 @@ export default function App() {
               <VoterLogin
                 voters={voters}
                 settings={settings}
+                candidates={candidates}
+                voteRecords={voteRecords}
+                onOpenQuickCount={() => navigateToView('public_results')}
                 onLoginSuccess={(voter) => setActiveVoter(voter)}
               />
             ) : (

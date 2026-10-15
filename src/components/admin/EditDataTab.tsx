@@ -21,7 +21,8 @@ import {
   ShieldCheck,
   School,
   Calendar,
-  Lock
+  Lock,
+  BarChart3
 } from 'lucide-react';
 
 interface EditDataTabProps {
@@ -31,6 +32,8 @@ interface EditDataTabProps {
   onUpdateVoters: (newVoters: Voter[]) => void;
   onUpdateCandidates: (newCandidates: Candidate[]) => void;
   onUpdateSettings: (newSettings: ElectionSettings) => void;
+  onOpenVoterView?: () => void;
+  onOpenPublicView?: () => void;
 }
 
 const PRESET_COLORS = [
@@ -49,6 +52,8 @@ export const EditDataTab: React.FC<EditDataTabProps> = ({
   onUpdateVoters,
   onUpdateCandidates,
   onUpdateSettings,
+  onOpenVoterView,
+  onOpenPublicView,
 }) => {
   const [activeSubTab, setActiveSubTab] = useState<'voters' | 'candidates' | 'settings'>('voters');
 
@@ -240,9 +245,31 @@ export const EditDataTab: React.FC<EditDataTabProps> = ({
         {activeSubTab === 'voters' && (
           <div className="pt-6 space-y-5">
             {voterSuccessMsg && (
-              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-3 animate-in fade-in">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                <span className="font-bold">{voterSuccessMsg}</span>
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                  <span className="font-bold">{voterSuccessMsg}</span>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  {onOpenVoterView && (
+                    <button
+                      onClick={onOpenVoterView}
+                      className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <Vote className="w-3.5 h-3.5" />
+                      <span>Halaman Siswa</span>
+                    </button>
+                  )}
+                  {onOpenPublicView && (
+                    <button
+                      onClick={onOpenPublicView}
+                      className="px-3 py-1.5 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <BarChart3 className="w-3.5 h-3.5" />
+                      <span>Quick Count</span>
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
@@ -523,9 +550,31 @@ export const EditDataTab: React.FC<EditDataTabProps> = ({
         {activeSubTab === 'candidates' && (
           <div className="pt-6 space-y-6">
             {candidateSuccessMsg && (
-              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-3 animate-in fade-in">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                <span className="font-bold">{candidateSuccessMsg}</span>
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                  <span className="font-bold">{candidateSuccessMsg} Tampilan profil dan visi-misi paslon di halaman depan siswa telah diperbarui.</span>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  {onOpenVoterView && (
+                    <button
+                      onClick={onOpenVoterView}
+                      className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <Vote className="w-3.5 h-3.5" />
+                      <span>Lihat Halaman Depan Siswa</span>
+                    </button>
+                  )}
+                  {onOpenPublicView && (
+                    <button
+                      onClick={onOpenPublicView}
+                      className="px-3 py-1.5 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <BarChart3 className="w-3.5 h-3.5" />
+                      <span>Lihat Quick Count</span>
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
@@ -840,9 +889,31 @@ export const EditDataTab: React.FC<EditDataTabProps> = ({
         {activeSubTab === 'settings' && (
           <div className="pt-6 space-y-6">
             {settingsSuccessMsg && (
-              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-3 animate-in fade-in">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                <span className="font-bold">{settingsSuccessMsg}</span>
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                  <span className="font-bold">{settingsSuccessMsg} Konfigurasi baru langsung aktif di seluruh halaman.</span>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  {onOpenVoterView && (
+                    <button
+                      onClick={onOpenVoterView}
+                      className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <Vote className="w-3.5 h-3.5" />
+                      <span>Lihat Halaman Depan Siswa</span>
+                    </button>
+                  )}
+                  {onOpenPublicView && (
+                    <button
+                      onClick={onOpenPublicView}
+                      className="px-3 py-1.5 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <BarChart3 className="w-3.5 h-3.5" />
+                      <span>Lihat Quick Count</span>
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 

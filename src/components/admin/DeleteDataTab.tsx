@@ -14,7 +14,8 @@ import {
   AlertCircle,
   Filter,
   CheckSquare,
-  Square
+  Square,
+  BarChart3
 } from 'lucide-react';
 
 interface DeleteDataTabProps {
@@ -26,6 +27,8 @@ interface DeleteDataTabProps {
   onUpdateCandidates: (newCandidates: Candidate[]) => void;
   onResetData: () => void;
   onNavigateToTab?: (tab: string) => void;
+  onOpenVoterView?: () => void;
+  onOpenPublicView?: () => void;
 }
 
 export const DeleteDataTab: React.FC<DeleteDataTabProps> = ({
@@ -37,6 +40,8 @@ export const DeleteDataTab: React.FC<DeleteDataTabProps> = ({
   onUpdateCandidates,
   onResetData,
   onNavigateToTab,
+  onOpenVoterView,
+  onOpenPublicView,
 }) => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -189,9 +194,31 @@ export const DeleteDataTab: React.FC<DeleteDataTabProps> = ({
 
         {/* Success Alert */}
         {successMessage && (
-          <div className="mt-5 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-3 animate-in fade-in">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-            <span className="font-bold">{successMessage}</span>
+          <div className="mt-5 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+              <span className="font-bold">{successMessage}</span>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              {onOpenVoterView && (
+                <button
+                  onClick={onOpenVoterView}
+                  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                >
+                  <Vote className="w-3.5 h-3.5" />
+                  <span>Lihat Halaman Siswa</span>
+                </button>
+              )}
+              {onOpenPublicView && (
+                <button
+                  onClick={onOpenPublicView}
+                  className="px-3 py-1.5 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                >
+                  <BarChart3 className="w-3.5 h-3.5" />
+                  <span>Lihat Quick Count</span>
+                </button>
+              )}
+            </div>
           </div>
         )}
 

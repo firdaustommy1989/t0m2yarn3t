@@ -115,6 +115,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>Quick Count</span>
               </button>
             </div>
+
+            {isAdminLoggedIn && (
+              <button
+                onClick={() => onViewChange('admin')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+                title="Kembali ke Panel Administrator"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                <span>Panel Admin</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

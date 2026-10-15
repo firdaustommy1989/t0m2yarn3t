@@ -44,15 +44,17 @@ export async function initializeFirestoreIfNeeded(): Promise<void> {
     const settingsSnap = await getDoc(settingsRef);
 
     if (!settingsSnap.exists()) {
-      // Seed default settings
-      await setDoc(settingsRef, DEFAULT_SETTINGS);
+      const currentSettings = getLocalSettings();
+      await setDoc(settingsRef, currentSettings || DEFAULT_SETTINGS);
     }
 
     const candidatesRef = collection(db, 'candidates');
     const candidatesSnap = await getDocs(candidatesRef);
     if (candidatesSnap.empty) {
+      const currentCandidates = getLocalCandidates();
+      const listToSeed = currentCandidates.length > 0 ? currentCandidates : DEFAULT_CANDIDATES;
       const batch = writeBatch(db);
-      DEFAULT_CANDIDATES.forEach((candidate) => {
+      listToSeed.forEach((candidate) => {
         batch.set(doc(db, 'candidates', candidate.id), candidate);
       });
       await batch.commit();
@@ -61,9 +63,10 @@ export async function initializeFirestoreIfNeeded(): Promise<void> {
     const votersRef = collection(db, 'voters');
     const votersSnap = await getDocs(votersRef);
     if (votersSnap.empty) {
-      // Seed initial voters in batches
+      const currentVoters = getLocalVoters();
+      const listToSeed = currentVoters.length > 0 ? currentVoters : DEFAULT_VOTERS;
       const batch = writeBatch(db);
-      DEFAULT_VOTERS.forEach((voter) => {
+      listToSeed.forEach((voter) => {
         batch.set(doc(db, 'voters', voter.id), voter);
       });
       await batch.commit();
@@ -113,18 +116,13 @@ export function subscribeCandidates(
   return onSnapshot(
     candidatesRef,
     (snapshot) => {
-      if (!snapshot.empty) {
-        const list: Candidate[] = [];
-        snapshot.forEach((docSnap) => {
-          list.push(docSnap.data() as Candidate);
-        });
-        list.sort((a, b) => a.candidateNumber - b.candidateNumber);
-        saveLocalCandidates(list);
-        callback(list);
-      } else {
-        const fallback = getLocalCandidates();
-        callback(fallback);
-      }
+      const list: Candidate[] = [];
+      snapshot.forEach((docSnap) => {
+        list.push(docSnap.data() as Candidate);
+      });
+      list.sort((a, b) => a.candidateNumber - b.candidateNumber);
+      saveLocalCandidates(list);
+      callback(list);
     },
     (error) => {
       console.warn('Candidates subscription fallback to local cache:', error.message);
@@ -145,23 +143,18 @@ export function subscribeVoters(
   return onSnapshot(
     votersRef,
     (snapshot) => {
-      if (!snapshot.empty) {
-        const list: Voter[] = [];
-        snapshot.forEach((docSnap) => {
-          list.push(docSnap.data() as Voter);
-        });
-        // Sort by gradeClass then name
-        list.sort((a, b) => {
-          const classComp = a.gradeClass.localeCompare(b.gradeClass);
-          if (classComp !== 0) return classComp;
-          return a.name.localeCompare(b.name);
-        });
-        saveLocalVoters(list);
-        callback(list);
-      } else {
-        const fallback = getLocalVoters();
-        callback(fallback);
-      }
+      const list: Voter[] = [];
+      snapshot.forEach((docSnap) => {
+        list.push(docSnap.data() as Voter);
+      });
+      // Sort by gradeClass then name
+      list.sort((a, b) => {
+        const classComp = a.gradeClass.localeCompare(b.gradeClass);
+        if (classComp !== 0) return classComp;
+        return a.name.localeCompare(b.name);
+      });
+      saveLocalVoters(list);
+      callback(list);
     },
     (error) => {
       console.warn('Voters subscription fallback to local cache:', error.message);

@@ -21,7 +21,10 @@ import {
   ArrowRight,
   Sparkles,
   Check,
-  ClipboardPaste
+  ClipboardPaste,
+  Vote,
+  BarChart3,
+  Eye
 } from 'lucide-react';
 
 interface UploadDataTabProps {
@@ -32,6 +35,8 @@ interface UploadDataTabProps {
   onUpdateCandidates: (newCandidates: Candidate[]) => void;
   onRefreshAll?: () => void;
   onNavigateToTab?: (tab: string) => void;
+  onOpenVoterView?: () => void;
+  onOpenPublicView?: () => void;
 }
 
 export const UploadDataTab: React.FC<UploadDataTabProps> = ({
@@ -42,6 +47,8 @@ export const UploadDataTab: React.FC<UploadDataTabProps> = ({
   onUpdateCandidates,
   onRefreshAll,
   onNavigateToTab,
+  onOpenVoterView,
+  onOpenPublicView,
 }) => {
   const [activeSubTab, setActiveSubTab] = useState<'dpt' | 'candidate' | 'backup'>('dpt');
 
@@ -243,17 +250,37 @@ export const UploadDataTab: React.FC<UploadDataTabProps> = ({
                 <div className="flex-1">
                   <p className="font-bold">{dptSuccessMessage}</p>
                   <p className="text-xs text-emerald-700 mt-0.5">
-                    Total DPT saat ini adalah <strong>{voters.length} pemilih</strong>.
+                    Total DPT saat ini adalah <strong>{voters.length} pemilih</strong>. Tampilan halaman depan siswa dan quick count telah langsung diperbarui!
                   </p>
                 </div>
-                {onNavigateToTab && (
-                  <button
-                    onClick={() => onNavigateToTab('voters')}
-                    className="px-3 py-1 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition cursor-pointer"
-                  >
-                    Lihat Tabel DPT &rarr;
-                  </button>
-                )}
+                <div className="flex items-center gap-2 shrink-0">
+                  {onOpenVoterView && (
+                    <button
+                      onClick={onOpenVoterView}
+                      className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <Vote className="w-3.5 h-3.5" />
+                      <span>Halaman Siswa</span>
+                    </button>
+                  )}
+                  {onOpenPublicView && (
+                    <button
+                      onClick={onOpenPublicView}
+                      className="px-3 py-1.5 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <BarChart3 className="w-3.5 h-3.5" />
+                      <span>Quick Count</span>
+                    </button>
+                  )}
+                  {onNavigateToTab && (
+                    <button
+                      onClick={() => onNavigateToTab('voters')}
+                      className="px-3 py-1.5 bg-white border border-emerald-300 text-emerald-800 rounded-lg text-xs font-bold hover:bg-emerald-50 transition cursor-pointer"
+                    >
+                      Tabel DPT &rarr;
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
@@ -546,9 +573,31 @@ export const UploadDataTab: React.FC<UploadDataTabProps> = ({
         {activeSubTab === 'candidate' && (
           <div className="pt-6 space-y-6">
             {candidateSuccessMessage && (
-              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-3 animate-in fade-in">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                <span className="font-bold">{candidateSuccessMessage}</span>
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                  <span className="font-bold">{candidateSuccessMessage} Foto baru langsung tampil di halaman depan siswa.</span>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  {onOpenVoterView && (
+                    <button
+                      onClick={onOpenVoterView}
+                      className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <Vote className="w-3.5 h-3.5" />
+                      <span>Lihat Halaman Depan Siswa</span>
+                    </button>
+                  )}
+                  {onOpenPublicView && (
+                    <button
+                      onClick={onOpenPublicView}
+                      className="px-3 py-1.5 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <BarChart3 className="w-3.5 h-3.5" />
+                      <span>Lihat Quick Count</span>
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
