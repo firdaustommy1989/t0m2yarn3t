@@ -27,6 +27,8 @@ import {
   BarChart3
 } from 'lucide-react';
 
+import { useToast } from '../common/Toast';
+
 interface VotersTabProps {
   voters: Voter[];
   settings: ElectionSettings;
@@ -42,6 +44,7 @@ export const VotersTab: React.FC<VotersTabProps> = ({
   onOpenVoterView,
   onOpenPublicView,
 }) => {
+  const toast = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'voted' | 'not_voted'>('all');
   const [gradeFilter, setGradeFilter] = useState<string>('all');
@@ -98,6 +101,7 @@ export const VotersTab: React.FC<VotersTabProps> = ({
   const handleCopyToken = (id: string, token: string) => {
     navigator.clipboard.writeText(token);
     setCopiedTokenId(id);
+    toast.success('Token Berhasil Disalin', `Token pemilih "${token}" telah disalin ke clipboard.`);
     setTimeout(() => setCopiedTokenId(null), 2000);
   };
 

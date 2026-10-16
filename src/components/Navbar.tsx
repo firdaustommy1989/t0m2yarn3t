@@ -46,12 +46,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
+    <header className="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 shadow-xs transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-18">
           {/* Brand & School Logo */}
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 flex items-center justify-center shrink-0 hover:scale-105 transition-transform drop-shadow-xs">
+          <div className="flex items-center gap-3 sm:gap-3.5">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center shrink-0 hover:scale-105 transition-transform drop-shadow-xs bg-white rounded-xl p-1 border border-slate-100 shadow-xs">
               <img
                 src={SCHOOL_LOGO}
                 onError={(e) => {
@@ -64,14 +64,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-slate-900 text-lg sm:text-xl tracking-tight">
+                <span className="font-extrabold text-slate-900 text-base sm:text-xl tracking-tight">
                   E-VOTING OSIS
                 </span>
-                <span className="hidden sm:inline-block text-xs font-medium px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                <span className="hidden sm:inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200/60">
                   {settings.periodYear}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 font-semibold truncate max-w-[200px] sm:max-w-xs md:max-w-md">
+              <p className="text-xs text-slate-500 font-medium truncate max-w-[160px] xs:max-w-[200px] sm:max-w-xs md:max-w-md">
                 {settings.schoolName}
               </p>
             </div>
@@ -80,40 +80,42 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Navigation Controls */}
           <div className="flex items-center gap-2 sm:gap-3">
             <span
-              className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-2xs"
               title="Perubahan data dari admin dan hasil suara tersinkronisasi otomatis antar semua perangkat dan browser secara real-time"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="hidden xs:inline">Live Multi-Perangkat</span>
-              <span className="xs:hidden">Live Cloud</span>
+              <span className="hidden sm:inline">Live Cloud Sync</span>
+              <span className="sm:hidden">Live</span>
             </span>
 
-            <div className="hidden lg:block mr-1">{getStatusBadge()}</div>
+            <div className="hidden lg:block">{getStatusBadge()}</div>
 
             {/* Mode Switcher Nav */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-sm">
+            <div className="flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/70 text-xs sm:text-sm">
               <button
                 onClick={() => onViewChange('voter')}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 ${
+                className={`flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg font-semibold transition-all duration-200 cursor-pointer ${
                   currentView === 'voter'
-                    ? 'bg-white text-blue-700 shadow-xs font-semibold'
+                    ? 'bg-white text-blue-700 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <Vote className="w-4 h-4" />
-                <span>Bilik Suara</span>
+                <span className="hidden xs:inline">Bilik Suara</span>
+                <span className="xs:hidden">Bilik</span>
               </button>
 
               <button
                 onClick={() => onViewChange('public_results')}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 ${
+                className={`flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-lg font-semibold transition-all duration-200 cursor-pointer ${
                   currentView === 'public_results'
-                    ? 'bg-white text-blue-700 shadow-xs font-semibold'
+                    ? 'bg-white text-blue-700 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <BarChart3 className="w-4 h-4" />
-                <span>Quick Count</span>
+                <span className="hidden xs:inline">Quick Count</span>
+                <span className="xs:hidden">Hasil</span>
               </button>
             </div>
 
@@ -124,7 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 title="Kembali ke Panel Administrator"
               >
                 <ShieldCheck className="w-4 h-4" />
-                <span>Panel Admin</span>
+                <span className="hidden md:inline">Panel Admin</span>
               </button>
             )}
           </div>

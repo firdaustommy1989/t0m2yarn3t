@@ -23,9 +23,11 @@ import { VotingBooth } from './components/voter/VotingBooth';
 import { PublicQuickCountView } from './components/public/PublicQuickCountView';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AdminPortalPage } from './components/admin/AdminPortalPage';
+import { useToast } from './components/common/Toast';
 import { School, Lock } from 'lucide-react';
 
 export default function App() {
+  const toast = useToast();
   const [currentView, setCurrentView] = useState<AppView>(() => {
     if (typeof window !== 'undefined' && window.location.hash.toLowerCase().includes('admin')) {
       return 'admin';
@@ -158,8 +160,13 @@ export default function App() {
     setCandidates(newCandidates);
     try {
       await saveCandidatesSync(newCandidates);
-    } catch (err) {
+      toast.success(
+        'Data saved successfully!',
+        'Data paslon berhasil diperbarui & disinkronkan ke seluruh perangkat.'
+      );
+    } catch (err: any) {
       console.warn('Sync candidates warning:', err);
+      toast.error('Gagal menyinkronkan data paslon', err?.message || 'Periksa koneksi.');
     }
   };
 
@@ -167,8 +174,13 @@ export default function App() {
     setVoters(newVoters);
     try {
       await saveVotersSync(newVoters);
-    } catch (err) {
+      toast.success(
+        'Data saved successfully!',
+        `Data DPT (${newVoters.length} pemilih) berhasil disinkronkan.`
+      );
+    } catch (err: any) {
       console.warn('Sync voters warning:', err);
+      toast.error('Gagal menyinkronkan data pemilih', err?.message || 'Periksa koneksi.');
     }
   };
 
@@ -176,16 +188,23 @@ export default function App() {
     setSettings(newSettings);
     try {
       await saveSettingsSync(newSettings);
-    } catch (err) {
+      toast.success(
+        'Data saved successfully!',
+        'Pengaturan pemilihan berhasil disimpan dan aktif di seluruh halaman.'
+      );
+    } catch (err: any) {
       console.warn('Sync settings warning:', err);
+      toast.error('Gagal menyinkronkan pengaturan', err?.message || 'Periksa koneksi.');
     }
   };
 
   const handleResetData = async () => {
     try {
       await resetVotingOnlySync();
-    } catch (err) {
+      toast.info('Kotak Suara Direset', 'Perolehan suara di semua bilik suara kembali ke 0.');
+    } catch (err: any) {
       console.warn('Reset voting warning:', err);
+      toast.error('Gagal mereset kotak suara', err?.message || 'Periksa koneksi.');
     }
     refreshAllState();
   };

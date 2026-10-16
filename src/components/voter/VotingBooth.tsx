@@ -3,6 +3,7 @@ import { Candidate, Voter, ElectionSettings } from '../../types/election';
 import { CandidateDetailModal } from './CandidateDetailModal';
 import { VoteSuccessModal } from './VoteSuccessModal';
 import { castVoteSync } from '../../services/electionDb';
+import { useToast } from '../common/Toast';
 import { Check, Eye, UserCheck, Shield, HelpCircle, ArrowLeft, Stamp } from 'lucide-react';
 
 interface VotingBoothProps {
@@ -20,6 +21,7 @@ export const VotingBooth: React.FC<VotingBoothProps> = ({
   onExitSession,
   onVoteRecorded,
 }) => {
+  const toast = useToast();
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [viewingDetailCandidate, setViewingDetailCandidate] = useState<Candidate | null>(null);
   const [isConfirming, setIsConfirming] = useState(false);
@@ -44,6 +46,10 @@ export const VotingBooth: React.FC<VotingBoothProps> = ({
       const result = await castVoteSync(voter.id, selectedCandidate.id);
 
       if (result.success && result.receiptCode && result.votedAt) {
+        toast.success(
+          'Vote successfully recorded!',
+          `Suara Anda untuk Paslon No. ${selectedCandidate.candidateNumber} telah berhasil dicatat di server.`
+        );
         setSuccessData({
           receiptCode: result.receiptCode,
           votedAt: result.votedAt,
@@ -53,11 +59,11 @@ export const VotingBooth: React.FC<VotingBoothProps> = ({
         setIsConfirming(false);
         onVoteRecorded();
       } else {
-        alert(result.message || 'Gagal mencatat suara. Silakan coba lagi.');
+        toast.error('Gagal mencatat suara', result.message || 'Silakan coba lagi.');
         setIsSubmitting(false);
       }
     } catch (e: any) {
-      alert(e?.message || 'Gagal mencatat suara ke database.');
+      toast.error('Gagal mencatat suara', e?.message || 'Silakan periksa koneksi.');
       setIsSubmitting(false);
     }
   };

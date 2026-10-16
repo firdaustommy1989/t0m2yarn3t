@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { SCHOOL_LOGO, SCHOOL_LOGO_SVG, DEFAULT_CANDIDATE_PHOTOS } from '../../utils/schoolAssets';
 import { CandidateDetailModal } from './CandidateDetailModal';
+import { useToast } from '../common/Toast';
 
 interface VoterLoginProps {
   voters: Voter[];
@@ -36,6 +37,7 @@ export const VoterLogin: React.FC<VoterLoginProps> = ({
   onLoginSuccess,
   onOpenQuickCount,
 }) => {
+  const toast = useToast();
   const [nisn, setNisn] = useState('');
   const [token, setToken] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -50,12 +52,16 @@ export const VoterLogin: React.FC<VoterLoginProps> = ({
     setErrorMessage('');
 
     if (settings.status === 'closed') {
-      setErrorMessage('Pemilihan telah ditutup oleh panitia KPU OSIS. Terima kasih atas partisipasi Anda.');
+      const msg = 'Pemilihan telah ditutup oleh panitia KPU OSIS. Terima kasih atas partisipasi Anda.';
+      setErrorMessage(msg);
+      toast.warning('Pemilihan Ditutup', msg);
       return;
     }
 
     if (settings.status === 'draft') {
-      setErrorMessage('Pemilihan masih dalam masa persiapan (Draft). Voting belum resmi dibuka.');
+      const msg = 'Pemilihan masih dalam masa persiapan (Draft). Voting belum resmi dibuka.';
+      setErrorMessage(msg);
+      toast.info('Masa Persiapan', msg);
       return;
     }
 
@@ -63,7 +69,9 @@ export const VoterLogin: React.FC<VoterLoginProps> = ({
     const cleanToken = token.trim().toLowerCase();
 
     if (!cleanNisn || !cleanToken) {
-      setErrorMessage('Silakan lengkapi NIS/NISN dan Token Akses Anda.');
+      const msg = 'Silakan lengkapi NIS/NISN dan Token Akses Anda.';
+      setErrorMessage(msg);
+      toast.error('Data Belum Lengkap', msg);
       return;
     }
 
@@ -72,22 +80,27 @@ export const VoterLogin: React.FC<VoterLoginProps> = ({
     );
 
     if (!matchedVoter) {
-      setErrorMessage('NIS/NISN tidak terdaftar dalam Daftar Pemilih Tetap (DPT). Silakan hubungi Panitia OSIS.');
+      const msg = 'NIS/NISN tidak terdaftar dalam DPT. Silakan hubungi Panitia KPU OSIS.';
+      setErrorMessage(msg);
+      toast.error('NISN Tidak Terdaftar', msg);
       return;
     }
 
     if (matchedVoter.token.toLowerCase() !== cleanToken) {
-      setErrorMessage('Token Akses tidak sesuai dengan NIS/NISN ini. Periksa kembali slip kartu pemilih Anda.');
+      const msg = 'Token Akses tidak sesuai dengan NIS/NISN ini. Periksa kembali slip kartu Anda.';
+      setErrorMessage(msg);
+      toast.error('Token Akses Salah', msg);
       return;
     }
 
     if (matchedVoter.hasVoted) {
-      setErrorMessage(
-        `Hak suara untuk ${matchedVoter.name} (${matchedVoter.nisn}) telah digunakan pada ${matchedVoter.votedAt || 'sebelumnya'} dengan No. Verifikasi: ${matchedVoter.receiptCode || '-'}. Setiap siswa hanya memiliki 1 hak suara.`
-      );
+      const msg = `Hak suara untuk ${matchedVoter.name} (${matchedVoter.nisn}) sudah digunakan pada ${matchedVoter.votedAt || 'sebelumnya'}.`;
+      setErrorMessage(msg);
+      toast.warning('Sudah Memilih', msg);
       return;
     }
 
+    toast.success('Autentikasi Berhasil', `Selamat datang di Bilik Suara, ${matchedVoter.name}!`);
     onLoginSuccess(matchedVoter);
   };
 
@@ -110,11 +123,12 @@ export const VoterLogin: React.FC<VoterLoginProps> = ({
               />
             </div>
             <div>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-1">
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-500/30 text-blue-200 border border-blue-400/30">
-                  PEMILIHAN UMUM KETUA & WAKIL KETUA OSIS
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-1.5 text-xs text-blue-200">
+                <span className="font-bold uppercase tracking-wider text-blue-200">
+                  Pemilihan Ketua & Wakil Ketua OSIS
                 </span>
-                <span className="text-xs text-blue-200">Periode {settings.periodYear}</span>
+                <span aria-hidden="true" className="text-blue-400">·</span>
+                <span className="font-medium text-blue-100">Periode {settings.periodYear}</span>
               </div>
               <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white">
                 {settings.electionTitle}

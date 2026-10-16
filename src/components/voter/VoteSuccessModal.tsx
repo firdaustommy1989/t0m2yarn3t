@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import confetti from 'canvas-confetti';
-import { CheckCircle2, Printer, ArrowRight, ShieldCheck, School, QrCode } from 'lucide-react';
+import { CheckCircle2, Printer, ArrowRight, ShieldCheck, School, QrCode, Copy } from 'lucide-react';
 import { Voter, ElectionSettings } from '../../types/election';
 import { SCHOOL_LOGO, SCHOOL_LOGO_SVG } from '../../utils/schoolAssets';
+import { useToast } from '../common/Toast';
 
 interface VoteSuccessModalProps {
   voter: Voter;
@@ -23,7 +24,13 @@ export const VoteSuccessModal: React.FC<VoteSuccessModalProps> = ({
   settings,
   onFinishSession,
 }) => {
+  const toast = useToast();
   const [countdown, setCountdown] = useState(12);
+
+  const handleCopyReceipt = () => {
+    navigator.clipboard.writeText(receiptCode);
+    toast.success('Kode Bukti Disalin', 'Kode tanda terima verifikasi telah disalin ke clipboard.');
+  };
 
   useEffect(() => {
     // Fire confetti
@@ -104,11 +111,21 @@ export const VoteSuccessModal: React.FC<VoteSuccessModalProps> = ({
                 <span className="text-slate-500">Waktu Coblos:</span>
                 <span className="font-mono text-slate-700">{votedAt}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-200/40">
+              <div className="flex justify-between items-center py-1 border-b border-slate-200/40">
                 <span className="text-slate-500">Kode Bukti Verifikasi:</span>
-                <span className="font-mono font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
-                  {receiptCode}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-mono font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
+                    {receiptCode}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyReceipt}
+                    className="p-1 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
+                    title="Salin Kode Verifikasi"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
               <div className="flex justify-between py-1 pt-2">
                 <span className="text-slate-500">Pilihan:</span>

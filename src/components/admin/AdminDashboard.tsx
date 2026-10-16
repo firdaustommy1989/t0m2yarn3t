@@ -61,46 +61,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     'quick_count' | 'upload_data' | 'edit_data' | 'delete_data' | 'voters' | 'candidates' | 'settings'
   >('quick_count');
   const [isPrintBeritaAcaraOpen, setIsPrintBeritaAcaraOpen] = useState(false);
-  const [recentChangeNotice, setRecentChangeNotice] = useState<{
-    title: string;
-    message: string;
-    type: 'candidate' | 'voter' | 'settings' | 'reset';
-  } | null>(null);
 
   const handleUpdateCandidatesWrapped = (newCandidates: Candidate[]) => {
     onUpdateCandidates(newCandidates);
-    setRecentChangeNotice({
-      title: 'Tersinkronisasi ke Semua Perangkat & Browser!',
-      message: 'Perubahan Paslon (foto, nama, nomor urut, visi-misi) langsung tampil serentak di halaman siswa dan quick count seluruh perangkat.',
-      type: 'candidate',
-    });
   };
 
   const handleUpdateVotersWrapped = (newVoters: Voter[]) => {
     onUpdateVoters(newVoters);
-    setRecentChangeNotice({
-      title: 'DPT Tersinkronisasi ke Semua Perangkat!',
-      message: 'Perubahan data pemilih dan status hak suara langsung terupdate di semua perangkat dan bilik suara.',
-      type: 'voter',
-    });
   };
 
   const handleUpdateSettingsWrapped = (newSettings: ElectionSettings) => {
     onUpdateSettings(newSettings);
-    setRecentChangeNotice({
-      title: 'Pengaturan Tersinkron ke Semua Perangkat!',
-      message: 'Judul pemilihan, identitas sekolah, dan jadwal langsung berubah di semua browser dan gawai pengguna.',
-      type: 'settings',
-    });
   };
 
   const handleResetDataWrapped = () => {
     onResetData();
-    setRecentChangeNotice({
-      title: 'Kotak Suara Direset di Semua Perangkat!',
-      message: 'Perolehan suara di semua bilik suara dan layar quick count kembali ke 0 secara serentak.',
-      type: 'reset',
-    });
   };
 
   return (
@@ -517,54 +492,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           />
         )}
       </div>
-
-      {/* Real-time Change Floating Action Toast */}
-      {recentChangeNotice && (
-        <div className="fixed bottom-6 right-6 z-50 max-w-md w-full bg-slate-900/95 backdrop-blur-md text-white p-5 rounded-3xl shadow-2xl border border-blue-500/40 animate-in slide-in-from-bottom-5 duration-300">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0 mt-0.5">
-                <CheckCircle2 className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-xs font-black text-emerald-400 tracking-wide uppercase flex items-center gap-1.5">
-                  <span>{recentChangeNotice.title}</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                </h4>
-                <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                  {recentChangeNotice.message}
-                </p>
-                <div className="flex flex-wrap items-center gap-2 mt-3.5">
-                  {onOpenVoterView && (
-                    <button
-                      onClick={onOpenVoterView}
-                      className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
-                    >
-                      <Vote className="w-3.5 h-3.5" />
-                      <span>Lihat Halaman Depan Siswa</span>
-                    </button>
-                  )}
-                  {onOpenPublicView && (
-                    <button
-                      onClick={onOpenPublicView}
-                      className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
-                    >
-                      <BarChart3 className="w-3.5 h-3.5" />
-                      <span>Lihat Quick Count</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={() => setRecentChangeNotice(null)}
-              className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Official Berita Acara Modal */}
       {isPrintBeritaAcaraOpen && (

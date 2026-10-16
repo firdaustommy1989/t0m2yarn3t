@@ -16,6 +16,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { SCHOOL_BACKGROUND } from '../../utils/schoolAssets';
+import { useToast } from '../common/Toast';
 
 interface PublicQuickCountViewProps {
   candidates: Candidate[];
@@ -78,8 +79,14 @@ export const PublicQuickCountView: React.FC<PublicQuickCountViewProps> = ({
   settings,
   onRefresh,
 }) => {
+  const toast = useToast();
   const [viewMode, setViewMode] = useState<'level' | 'rombel'>('level');
   const [rombelFilterLevel, setRombelFilterLevel] = useState<string>('all');
+
+  const handleRefreshClick = () => {
+    if (onRefresh) onRefresh();
+    toast.success('Data Quick Count Diperbarui', 'Data perolehan suara & partisipasi telah diperbarui.');
+  };
 
   const totalVoters = voters.length;
   const votedCount = voters.filter((v) => v.hasVoted).length;
@@ -221,7 +228,7 @@ export const PublicQuickCountView: React.FC<PublicQuickCountViewProps> = ({
           <div className="flex flex-wrap items-center gap-2.5">
             {onRefresh && (
               <button
-                onClick={onRefresh}
+                onClick={handleRefreshClick}
                 className="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
                 title="Perbarui Data"
               >
